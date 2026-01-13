@@ -149,16 +149,22 @@ const AppointmentsModule = (function() {
    * Cancel an appointment
    */
   function cancelAppointment(appointmentId, reason = '') {
+    console.log('cancelAppointment called with ID:', appointmentId);
     const appointments = getAppointments();
+    console.log('All appointments:', appointments.map(a => ({ id: a.id, status: a.status })));
+
     const index = appointments.findIndex(apt => apt.id === appointmentId);
+    console.log('Found index:', index);
 
     if (index !== -1) {
       appointments[index].status = 'cancelled';
       appointments[index].cancelReason = reason;
       appointments[index].cancelledAt = new Date().toISOString();
       saveAppointments(appointments);
+      console.log('Appointment cancelled and saved');
       return true;
     }
+    console.log('Appointment not found');
     return false;
   }
 

@@ -309,8 +309,16 @@
         });
 
         document.getElementById('cancelModalYes').addEventListener('click', function() {
-          AppointmentsModule.cancelAppointment(appointmentId);
-          window.location.href = 'appointments.html';
+          console.log('Cancelling appointment:', appointmentId);
+          const success = AppointmentsModule.cancelAppointment(appointmentId);
+          console.log('Cancel result:', success);
+
+          if (success) {
+            window.location.href = 'appointments.html';
+          } else {
+            alert('Failed to cancel appointment. ID: ' + appointmentId);
+            cancelModal.classList.remove('open');
+          }
         });
 
       } else if (isPast) {
