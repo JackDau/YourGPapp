@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Appointment - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="appointments-book-step3.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Book Appointment</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main no-nav">
+      <div class="page">
+        <!-- Progress -->
+        <div class="text-center mb-5">
+          <p class="text-muted text-small">Step 4 of 4</p>
+          <div class="progress-steps mt-3">
+            <div class="progress-step">
+              <div class="progress-step-dot completed"></div>
+            </div>
+            <div class="progress-step-line completed"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot completed"></div>
+            </div>
+            <div class="progress-step-line completed"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot completed"></div>
+            </div>
+            <div class="progress-step-line completed"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot active"></div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: var(--font-size-xs); color: var(--color-gray-500); margin-top: var(--space-2);">
+            <span style="color: var(--color-success);">Type ✓</span>
+            <span style="color: var(--color-success);">Doctor ✓</span>
+            <span style="color: var(--color-success);">Time ✓</span>
+            <span style="color: var(--color-primary); font-weight: var(--font-weight-medium);">Confirm</span>
+          </div>
+        </div>
+
+        <h2 style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">Confirm your appointment</h2>
+
+        <!-- Appointment Summary Card -->
+        <div class="card mb-5">
+          <div class="card-body">
+            <div style="text-align: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200); margin-bottom: var(--space-4);">
+              <div style="font-size: 2rem; margin-bottom: var(--space-2);">📅</div>
+              <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--space-1);">Tuesday, 21 January 2026</h3>
+              <p style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">9:30 AM - 9:45 AM</p>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200);">
+              <span style="font-size: 1.25rem;">👨‍⚕️</span>
+              <div>
+                <p class="text-small text-muted">Practitioner</p>
+                <p style="font-weight: var(--font-weight-medium);">Dr. James Wilson</p>
+                <p class="text-small text-muted">General Practitioner</p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200);">
+              <span style="font-size: 1.25rem;">🏥</span>
+              <div>
+                <p class="text-small text-muted">Appointment Type</p>
+                <p style="font-weight: var(--font-weight-medium);">Standard Consultation</p>
+                <p class="text-small text-muted">15 minutes, In-person</p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) 0;">
+              <span style="font-size: 1.25rem;">📍</span>
+              <div>
+                <p class="text-small text-muted">Location</p>
+                <p style="font-weight: var(--font-weight-medium);">Your GP</p>
+                <p class="text-small text-muted">123 Example Street<br>Canberra ACT 2600</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reason for Visit -->
+        <div class="form-group mb-4">
+          <label for="reason" class="form-label">Reason for visit (optional)</label>
+          <textarea
+            id="reason"
+            class="form-input"
+            rows="3"
+            placeholder="e.g., Follow-up on blood test results, persistent headache..."
+            style="resize: vertical; min-height: 80px;"
+          ></textarea>
+        </div>
+
+        <!-- Reminder Checkbox -->
+        <label class="form-check mb-5">
+          <input type="checkbox" class="form-check-input" checked>
+          <span class="form-check-label">
+            Send me a reminder 24 hours before
+          </span>
+        </label>
+
+        <!-- Confirm Button -->
+        <a href="appointment-confirmed.html" class="btn btn-primary btn-block btn-lg mb-3">
+          Confirm Appointment
+        </a>
+
+        <p class="text-center text-small text-muted">
+          By confirming, you agree to our <a href="#">cancellation policy</a>.
+        </p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

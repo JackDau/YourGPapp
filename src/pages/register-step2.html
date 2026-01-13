@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Password - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .password-requirement {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+      margin-bottom: var(--space-2);
+    }
+    .password-requirement.met {
+      color: var(--color-success);
+    }
+    .requirement-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+    .password-requirement.met .requirement-icon {
+      background-color: var(--color-success);
+      border-color: var(--color-success);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="app auth-page">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="register-step1.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <div class="auth-content">
+      <div style="max-width: 400px; margin: 0 auto;">
+        <!-- Title and Progress -->
+        <div class="text-center mb-5">
+          <h1 style="font-size: var(--font-size-2xl); margin-bottom: var(--space-2);">Create your account</h1>
+          <p class="text-muted text-small">Step 2 of 3</p>
+
+          <!-- Progress Steps -->
+          <div class="progress-steps mt-4">
+            <div class="progress-step">
+              <div class="progress-step-dot completed"></div>
+            </div>
+            <div class="progress-step-line completed"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot active"></div>
+            </div>
+            <div class="progress-step-line"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: var(--font-size-xs); color: var(--color-gray-500); margin-top: var(--space-2); padding: 0 var(--space-2);">
+            <span style="color: var(--color-success);">Verify ✓</span>
+            <span style="color: var(--color-primary); font-weight: var(--font-weight-medium);">Create</span>
+            <span>Done</span>
+          </div>
+        </div>
+
+        <!-- Success Message -->
+        <div class="alert alert-success mb-5">
+          <span class="alert-icon">✓</span>
+          <div class="alert-content">
+            Great! We found your record. Now create your login credentials.
+          </div>
+        </div>
+
+        <!-- Password Form -->
+        <form action="register-step3.html" method="get">
+          <div class="form-group">
+            <label for="password" class="form-label">Create password</label>
+            <div class="input-group">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-input"
+                placeholder="Create a strong password"
+                required
+                oninput="checkPassword()"
+              >
+              <button type="button" class="input-icon" onclick="togglePassword('password')">
+                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label">Confirm password</label>
+            <div class="input-group">
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                class="form-input"
+                placeholder="Confirm your password"
+                required
+                oninput="checkPassword()"
+              >
+              <button type="button" class="input-icon" onclick="togglePassword('confirmPassword')">
+                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Password Requirements -->
+          <div class="mb-5">
+            <p class="text-small text-muted mb-3">Password requirements:</p>
+            <div class="password-requirement" id="req-length">
+              <span class="requirement-icon">✓</span>
+              <span>At least 8 characters</span>
+            </div>
+            <div class="password-requirement" id="req-upper">
+              <span class="requirement-icon">✓</span>
+              <span>One uppercase letter</span>
+            </div>
+            <div class="password-requirement" id="req-number">
+              <span class="requirement-icon">✓</span>
+              <span>One number</span>
+            </div>
+            <div class="password-requirement" id="req-special">
+              <span class="requirement-icon">✓</span>
+              <span>One special character</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="mobile" class="form-label">Mobile number (for 2FA)</label>
+            <input
+              type="tel"
+              id="mobile"
+              name="mobile"
+              class="form-input"
+              placeholder="0400 000 000"
+              required
+            >
+            <span class="form-helper">We'll send a code to verify your number</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block btn-lg mt-5">
+            Continue
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function checkPassword() {
+      const password = document.getElementById('password').value;
+
+      // Check requirements
+      const requirements = {
+        'req-length': password.length >= 8,
+        'req-upper': /[A-Z]/.test(password),
+        'req-number': /[0-9]/.test(password),
+        'req-special': /[!@#$%^&*(),.?":{}|<>]/.test(password)
+      };
+
+      for (const [id, met] of Object.entries(requirements)) {
+        const element = document.getElementById(id);
+        if (met) {
+          element.classList.add('met');
+        } else {
+          element.classList.remove('met');
+        }
+      }
+    }
+  </script>
+</body>
+</html>

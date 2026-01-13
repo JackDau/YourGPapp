@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Appointment - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="appointments.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Book Appointment</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main no-nav">
+      <div class="page">
+        <!-- Progress -->
+        <div class="text-center mb-5">
+          <p class="text-muted text-small">Step 1 of 4</p>
+          <div class="progress-steps mt-3">
+            <div class="progress-step">
+              <div class="progress-step-dot active"></div>
+            </div>
+            <div class="progress-step-line"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot"></div>
+            </div>
+            <div class="progress-step-line"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot"></div>
+            </div>
+            <div class="progress-step-line"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot"></div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: var(--font-size-xs); color: var(--color-gray-500); margin-top: var(--space-2);">
+            <span style="color: var(--color-primary); font-weight: var(--font-weight-medium);">Type</span>
+            <span>Doctor</span>
+            <span>Time</span>
+            <span>Confirm</span>
+          </div>
+        </div>
+
+        <h2 style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">What type of appointment do you need?</h2>
+
+        <!-- In-Person Section -->
+        <h3 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">In-Person</h3>
+
+        <a href="appointments-book-step2.html?type=standard" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+              <div style="font-size: 1.5rem;">🏥</div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Standard Consultation</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">15 minutes</p>
+                <p class="text-small text-muted">General health concerns, follow-ups, quick questions</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="appointments-book-step2.html?type=long" class="card card-interactive" style="display: block; margin-bottom: var(--space-5);">
+          <div class="card-body">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+              <div style="font-size: 1.5rem;">🏥</div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Long Consultation</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">30 minutes</p>
+                <p class="text-small text-muted">Complex issues, multiple concerns, mental health</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Telehealth Section -->
+        <h3 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">Telehealth</h3>
+
+        <a href="appointments-book-step2.html?type=telehealth-standard" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+              <div style="font-size: 1.5rem;">📹</div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Standard Telehealth</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">15 minutes</p>
+                <p class="text-small text-muted">Video consultation from home</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="appointments-book-step2.html?type=telehealth-long" class="card card-interactive" style="display: block;">
+          <div class="card-body">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+              <div style="font-size: 1.5rem;">📹</div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Long Telehealth</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">30 minutes</p>
+                <p class="text-small text-muted">Extended video consultation</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

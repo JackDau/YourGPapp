@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Doctor - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="appointments-book-step1.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Book Appointment</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main no-nav">
+      <div class="page">
+        <!-- Progress -->
+        <div class="text-center mb-5">
+          <p class="text-muted text-small">Step 2 of 4</p>
+          <div class="progress-steps mt-3">
+            <div class="progress-step">
+              <div class="progress-step-dot completed"></div>
+            </div>
+            <div class="progress-step-line completed"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot active"></div>
+            </div>
+            <div class="progress-step-line"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot"></div>
+            </div>
+            <div class="progress-step-line"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot"></div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: var(--font-size-xs); color: var(--color-gray-500); margin-top: var(--space-2);">
+            <span style="color: var(--color-success);">Type ✓</span>
+            <span style="color: var(--color-primary); font-weight: var(--font-weight-medium);">Doctor</span>
+            <span>Time</span>
+            <span>Confirm</span>
+          </div>
+        </div>
+
+        <!-- Selected Type -->
+        <div class="alert alert-info mb-4" style="padding: var(--space-3);">
+          <span>🏥</span>
+          <span>Standard Consultation (15 min)</span>
+        </div>
+
+        <h2 style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">Who would you like to see?</h2>
+
+        <!-- Any Available Option -->
+        <a href="appointments-book-step3.html?doctor=any" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <div class="avatar" style="background-color: var(--color-gray-200); color: var(--color-gray-600);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Any Available Doctor</h3>
+                <p class="text-small text-muted">Soonest availability</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Divider -->
+        <div class="divider"></div>
+
+        <!-- Doctor List -->
+        <a href="appointments-book-step3.html?doctor=wilson" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <div class="avatar">JW</div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dr. James Wilson</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">General Practitioner</p>
+                <p class="text-small" style="color: var(--color-success);">Next available: Tomorrow</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="appointments-book-step3.html?doctor=chen" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <div class="avatar" style="background-color: #7c3aed;">EC</div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dr. Emily Chen</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">General Practitioner</p>
+                <p class="text-small" style="color: var(--color-gray-600);">Next available: Wed 22 Jan</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="appointments-book-step3.html?doctor=park" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <div class="avatar" style="background-color: #0891b2;">SP</div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dr. Sarah Park</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">General Practitioner</p>
+                <p class="text-small" style="color: var(--color-gray-600);">Next available: Thu 23 Jan</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <a href="appointments-book-step3.html?doctor=nurse" class="card card-interactive" style="display: block;">
+          <div class="card-body">
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <div class="avatar" style="background-color: #059669;">RT</div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Nurse Rebecca Torres</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">Practice Nurse</p>
+                <p class="text-small" style="color: var(--color-success);">Next available: Today</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

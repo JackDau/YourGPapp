@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Referrals - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="dashboard.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Referrals</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main no-nav">
+      <div class="page">
+        <p class="text-muted mb-4">Letters and referrals written by Your GP on your behalf.</p>
+
+        <!-- Tabs -->
+        <div class="tabs mb-5">
+          <button class="tab active">Active</button>
+          <button class="tab">Completed</button>
+          <button class="tab">All</button>
+        </div>
+
+        <!-- Active Referrals Section -->
+        <div class="section">
+          <div class="section-header" style="padding: 0;">
+            <h2 class="section-title">Active Referrals</h2>
+          </div>
+
+          <!-- Referral 1 - New -->
+          <a href="referral-detail.html" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+            <div class="card-body">
+              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                <div style="width: 40px; height: 40px; background-color: #f3e8ff; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                  📄
+                </div>
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
+                    <h3 style="font-size: var(--font-size-base);">Cardiology Referral</h3>
+                    <span class="badge badge-info badge-dot"></span>
+                  </div>
+                  <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Robert Kim</p>
+                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Canberra Heart Clinic</p>
+                  <p class="text-small text-muted">Issued: 8 Jan 2026</p>
+                  <p class="text-small" style="color: var(--color-success);">Valid until: 8 Jan 2027</p>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+          </a>
+
+          <!-- Referral 2 -->
+          <a href="#" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+            <div class="card-body">
+              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                <div style="width: 40px; height: 40px; background-color: #f3e8ff; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                  📄
+                </div>
+                <div style="flex: 1;">
+                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dermatology Referral</h3>
+                  <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Lisa Wang</p>
+                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Skin Health Canberra</p>
+                  <p class="text-small text-muted">Issued: 20 Dec 2025</p>
+                  <p class="text-small" style="color: var(--color-success);">Valid until: 20 Dec 2026</p>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+          </a>
+
+          <!-- Referral 3 - EPC -->
+          <a href="#" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+            <div class="card-body">
+              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                <div style="width: 40px; height: 40px; background-color: var(--color-success-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                  📄
+                </div>
+                <div style="flex: 1;">
+                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Physiotherapy Referral</h3>
+                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Allied Health (EPC Plan)</p>
+                  <!-- Sessions indicator -->
+                  <div style="display: flex; align-items: center; gap: var(--space-1); margin-bottom: var(--space-2);">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-gray-300);"></span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-gray-300);"></span>
+                    <span class="text-small text-muted" style="margin-left: var(--space-2);">3 of 5 remaining</span>
+                  </div>
+                  <p class="text-small" style="color: var(--color-success);">Valid until: 15 Mar 2026</p>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Expiring Soon Section -->
+        <div class="section mt-5">
+          <div class="section-header" style="padding: 0;">
+            <h2 class="section-title">Expiring Soon</h2>
+          </div>
+
+          <a href="#" class="card card-interactive" style="display: block; border: 1px solid var(--color-warning);">
+            <div class="card-body">
+              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                <div style="width: 40px; height: 40px; background-color: var(--color-warning-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                  ⚠️
+                </div>
+                <div style="flex: 1;">
+                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Orthopaedic Referral</h3>
+                  <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Andrew Smith</p>
+                  <p class="text-small" style="color: var(--color-warning); font-weight: var(--font-weight-medium);">Expires in 14 days</p>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

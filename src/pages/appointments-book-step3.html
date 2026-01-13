@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Select Time - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .calendar {
+      background-color: var(--color-white);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-4);
+    }
+    .calendar-nav {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+      color: var(--color-gray-600);
+    }
+    .calendar-nav:hover {
+      background-color: var(--color-gray-100);
+    }
+    .calendar-title {
+      font-weight: var(--font-weight-semibold);
+    }
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: var(--space-1);
+      margin-bottom: var(--space-2);
+    }
+    .calendar-weekday {
+      text-align: center;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-gray-500);
+      padding: var(--space-2);
+    }
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: var(--space-1);
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-sm);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .calendar-day:hover:not(.disabled):not(.selected) {
+      background-color: var(--color-gray-100);
+    }
+    .calendar-day.disabled {
+      color: var(--color-gray-300);
+      cursor: not-allowed;
+    }
+    .calendar-day.selected {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      font-weight: var(--font-weight-semibold);
+    }
+    .calendar-day.today {
+      border: 2px solid var(--color-primary);
+    }
+    .calendar-day.has-slots {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+    }
+    .time-slot {
+      padding: var(--space-3);
+      text-align: center;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      background-color: var(--color-white);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .time-slot:hover {
+      border-color: var(--color-primary);
+    }
+    .time-slot.selected {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      border-color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="appointments-book-step2.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Book Appointment</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main no-nav">
+      <div class="page">
+        <!-- Progress -->
+        <div class="text-center mb-5">
+          <p class="text-muted text-small">Step 3 of 4</p>
+          <div class="progress-steps mt-3">
+            <div class="progress-step">
+              <div class="progress-step-dot completed"></div>
+            </div>
+            <div class="progress-step-line completed"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot completed"></div>
+            </div>
+            <div class="progress-step-line completed"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot active"></div>
+            </div>
+            <div class="progress-step-line"></div>
+            <div class="progress-step">
+              <div class="progress-step-dot"></div>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: var(--font-size-xs); color: var(--color-gray-500); margin-top: var(--space-2);">
+            <span style="color: var(--color-success);">Type ✓</span>
+            <span style="color: var(--color-success);">Doctor ✓</span>
+            <span style="color: var(--color-primary); font-weight: var(--font-weight-medium);">Time</span>
+            <span>Confirm</span>
+          </div>
+        </div>
+
+        <!-- Selected Info -->
+        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div class="avatar">JW</div>
+          <div>
+            <h3 style="font-size: var(--font-size-base);">Dr. James Wilson</h3>
+            <p class="text-small text-muted">Standard Consultation (15 min)</p>
+          </div>
+        </div>
+
+        <h2 style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">Select a date</h2>
+
+        <!-- Calendar -->
+        <div class="calendar">
+          <div class="calendar-header">
+            <button class="calendar-nav">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+            </button>
+            <span class="calendar-title">January 2026</span>
+            <button class="calendar-nav">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+          <div class="calendar-weekdays">
+            <div class="calendar-weekday">Mon</div>
+            <div class="calendar-weekday">Tue</div>
+            <div class="calendar-weekday">Wed</div>
+            <div class="calendar-weekday">Thu</div>
+            <div class="calendar-weekday">Fri</div>
+            <div class="calendar-weekday">Sat</div>
+            <div class="calendar-weekday">Sun</div>
+          </div>
+          <div class="calendar-days">
+            <div class="calendar-day disabled"></div>
+            <div class="calendar-day disabled"></div>
+            <div class="calendar-day disabled">1</div>
+            <div class="calendar-day disabled">2</div>
+            <div class="calendar-day disabled">3</div>
+            <div class="calendar-day disabled">4</div>
+            <div class="calendar-day disabled">5</div>
+            <div class="calendar-day disabled">6</div>
+            <div class="calendar-day disabled">7</div>
+            <div class="calendar-day disabled">8</div>
+            <div class="calendar-day disabled">9</div>
+            <div class="calendar-day disabled">10</div>
+            <div class="calendar-day disabled">11</div>
+            <div class="calendar-day disabled">12</div>
+            <div class="calendar-day today has-slots" onclick="selectDate(this)">13</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">14</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">15</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">16</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">17</div>
+            <div class="calendar-day disabled">18</div>
+            <div class="calendar-day disabled">19</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">20</div>
+            <div class="calendar-day has-slots selected" onclick="selectDate(this)">21</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">22</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">23</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">24</div>
+            <div class="calendar-day disabled">25</div>
+            <div class="calendar-day disabled">26</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">27</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">28</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">29</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">30</div>
+            <div class="calendar-day has-slots" onclick="selectDate(this)">31</div>
+          </div>
+        </div>
+
+        <!-- Time Slots -->
+        <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-3);">Tuesday, 21 January 2026</h3>
+
+        <h4 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">Morning</h4>
+        <div class="time-slots mb-4">
+          <div class="time-slot" onclick="selectTime(this)">8:00 AM</div>
+          <div class="time-slot" onclick="selectTime(this)">8:15 AM</div>
+          <div class="time-slot" onclick="selectTime(this)">8:30 AM</div>
+          <div class="time-slot" onclick="selectTime(this)">9:00 AM</div>
+          <div class="time-slot selected" onclick="selectTime(this)">9:30 AM</div>
+          <div class="time-slot" onclick="selectTime(this)">10:00 AM</div>
+          <div class="time-slot" onclick="selectTime(this)">10:30 AM</div>
+          <div class="time-slot" onclick="selectTime(this)">11:00 AM</div>
+          <div class="time-slot" onclick="selectTime(this)">11:30 AM</div>
+        </div>
+
+        <h4 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">Afternoon</h4>
+        <div class="time-slots mb-5">
+          <div class="time-slot" onclick="selectTime(this)">2:00 PM</div>
+          <div class="time-slot" onclick="selectTime(this)">2:30 PM</div>
+          <div class="time-slot" onclick="selectTime(this)">3:00 PM</div>
+          <div class="time-slot" onclick="selectTime(this)">3:30 PM</div>
+          <div class="time-slot" onclick="selectTime(this)">4:00 PM</div>
+          <div class="time-slot" onclick="selectTime(this)">4:30 PM</div>
+        </div>
+
+        <a href="appointments-book-step4.html" class="btn btn-primary btn-block btn-lg">
+          Continue
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function selectDate(el) {
+      document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function selectTime(el) {
+      document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+  </script>
+</body>
+</html>
