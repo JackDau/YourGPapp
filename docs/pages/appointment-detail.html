@@ -105,7 +105,7 @@
   </div>
 
   <!-- Cancel Confirmation Modal -->
-  <div id="cancelModal" class="modal" style="display: none;">
+  <div id="cancelModal" class="modal">
     <div class="modal-overlay"></div>
     <div class="modal-content">
       <h3 style="margin-bottom: 12px; font-size: 18px;">Cancel Appointment?</h3>
@@ -118,36 +118,28 @@
   </div>
 
   <style>
-    .modal {
+    /* Modal overlay - sits behind the modal content */
+    #cancelModal .modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      z-index: 1000;
-    }
-    .modal-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
       background-color: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      z-index: 999;
     }
-    .modal-content {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: white;
+    #cancelModal.open .modal-overlay {
+      opacity: 1;
+      visibility: visible;
+    }
+    /* Modal content panel */
+    #cancelModal .modal-content {
+      position: relative;
+      z-index: 1;
       padding: 24px;
-      border-radius: 16px 16px 0 0;
-      animation: slideUp 0.3s ease;
-      z-index: 1001;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
     }
     .alert-gray {
       background-color: var(--color-gray-100);
@@ -305,15 +297,15 @@
         const cancelModal = document.getElementById('cancelModal');
 
         document.getElementById('cancelBtn').addEventListener('click', function() {
-          cancelModal.style.display = 'block';
+          cancelModal.classList.add('open');
         });
 
         document.getElementById('cancelModalNo').addEventListener('click', function() {
-          cancelModal.style.display = 'none';
+          cancelModal.classList.remove('open');
         });
 
         document.querySelector('.modal-overlay').addEventListener('click', function() {
-          cancelModal.style.display = 'none';
+          cancelModal.classList.remove('open');
         });
 
         document.getElementById('cancelModalYes').addEventListener('click', function() {
