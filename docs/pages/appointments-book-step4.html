@@ -182,6 +182,24 @@
         document.getElementById('locationAddress').innerHTML = 'A video link will be sent to your<br>email before the appointment.';
       }
 
+      // Check if appointment is within 36 hours - disable reminder if so
+      const appointmentDateTime = new Date(state.date + 'T00:00:00');
+      appointmentDateTime.setHours(hour24, minutes, 0, 0);
+      const now = new Date();
+      const hoursUntilAppointment = (appointmentDateTime - now) / (1000 * 60 * 60);
+
+      const reminderCheckbox = document.getElementById('sendReminder');
+      const reminderLabel = reminderCheckbox.closest('.form-check');
+
+      if (hoursUntilAppointment <= 36) {
+        reminderCheckbox.checked = false;
+        reminderCheckbox.disabled = true;
+        reminderLabel.style.opacity = '0.5';
+        reminderLabel.style.cursor = 'not-allowed';
+        reminderLabel.querySelector('.form-check-label').innerHTML =
+          'Send me a reminder 24 hours before<br><span class="text-small text-muted">(Not available - appointment is within 36 hours)</span>';
+      }
+
       // Handle confirmation
       document.getElementById('confirmBtn').addEventListener('click', function() {
         const reason = document.getElementById('reason').value.trim();
