@@ -53,15 +53,45 @@
         </div>
 
         <!-- Selected Type -->
-        <div class="alert alert-info mb-4" style="padding: var(--space-3);">
-          <span>🏥</span>
-          <span>Standard Consultation (15 min)</span>
+        <div class="alert alert-info mb-4" style="padding: var(--space-3);" id="selectedType">
+          <span id="typeIcon">🏥</span>
+          <span id="typeName">Loading...</span>
         </div>
 
         <h2 style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">Who would you like to see?</h2>
 
-        <!-- Any Available Option -->
-        <a href="appointments-book-step3.html?doctor=any" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+        <!-- Practitioner List Container -->
+        <div id="practitionerList">
+          <!-- Will be populated by JavaScript -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/appointments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const state = AppointmentsModule.getBookingState();
+
+      // Check if we have a type selected
+      if (!state.type) {
+        window.location.href = 'appointments-book-step1.html';
+        return;
+      }
+
+      // Get the appointment type info
+      const typeInfo = AppointmentsModule.APPOINTMENT_TYPES[state.type];
+
+      // Update the selected type display
+      document.getElementById('typeIcon').textContent = typeInfo.icon;
+      document.getElementById('typeName').textContent = `${typeInfo.name} (${typeInfo.duration} min)`;
+
+      // Build practitioner list
+      const listContainer = document.getElementById('practitionerList');
+
+      // Add "Any Available" option
+      const anyAvailableHtml = `
+        <div class="card card-interactive practitioner-card" data-practitioner="any" style="display: block; margin-bottom: var(--space-3); cursor: pointer;">
           <div class="card-body">
             <div style="display: flex; align-items: center; gap: var(--space-3);">
               <div class="avatar" style="background-color: var(--color-gray-200); color: var(--color-gray-600);">
@@ -79,77 +109,77 @@
               </svg>
             </div>
           </div>
-        </a>
+        </div>
 
-        <!-- Divider -->
         <div class="divider"></div>
+      `;
 
-        <!-- Doctor List -->
-        <a href="appointments-book-step3.html?doctor=wilson" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-          <div class="card-body">
-            <div style="display: flex; align-items: center; gap: var(--space-3);">
-              <div class="avatar">JW</div>
-              <div style="flex: 1;">
-                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dr. James Wilson</h3>
-                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">General Practitioner</p>
-                <p class="text-small" style="color: var(--color-success);">Next available: Tomorrow</p>
+      listContainer.innerHTML = anyAvailableHtml;
+
+      // Add each practitioner
+      Object.entries(AppointmentsModule.PRACTITIONERS).forEach(([id, practitioner]) => {
+        const nextAvailable = AppointmentsModule.getNextAvailableDate(id);
+        const availabilityText = nextAvailable
+          ? AppointmentsModule.getRelativeDate(nextAvailable)
+          : 'No availability';
+
+        const isToday = nextAvailable && AppointmentsModule.getRelativeDate(nextAvailable) === 'Today';
+        const isTomorrow = nextAvailable && AppointmentsModule.getRelativeDate(nextAvailable) === 'Tomorrow';
+
+        const cardHtml = `
+          <div class="card card-interactive practitioner-card" data-practitioner="${id}" style="display: block; margin-bottom: var(--space-3); cursor: pointer;">
+            <div class="card-body">
+              <div style="display: flex; align-items: center; gap: var(--space-3);">
+                <div class="avatar" style="background-color: ${practitioner.color};">${practitioner.initials}</div>
+                <div style="flex: 1;">
+                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">${practitioner.name}</h3>
+                  <p class="text-small text-muted" style="margin-bottom: var(--space-1);">${practitioner.title}</p>
+                  <p class="text-small" style="color: ${isToday || isTomorrow ? 'var(--color-success)' : 'var(--color-gray-600)'};">
+                    Next available: ${availabilityText}
+                  </p>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
               </div>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
             </div>
           </div>
-        </a>
+        `;
 
-        <a href="appointments-book-step3.html?doctor=chen" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-          <div class="card-body">
-            <div style="display: flex; align-items: center; gap: var(--space-3);">
-              <div class="avatar" style="background-color: #7c3aed;">EC</div>
-              <div style="flex: 1;">
-                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dr. Emily Chen</h3>
-                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">General Practitioner</p>
-                <p class="text-small" style="color: var(--color-gray-600);">Next available: Wed 22 Jan</p>
-              </div>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </div>
-          </div>
-        </a>
+        listContainer.innerHTML += cardHtml;
+      });
 
-        <a href="appointments-book-step3.html?doctor=park" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-          <div class="card-body">
-            <div style="display: flex; align-items: center; gap: var(--space-3);">
-              <div class="avatar" style="background-color: #0891b2;">SP</div>
-              <div style="flex: 1;">
-                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dr. Sarah Park</h3>
-                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">General Practitioner</p>
-                <p class="text-small" style="color: var(--color-gray-600);">Next available: Thu 23 Jan</p>
-              </div>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </div>
-          </div>
-        </a>
+      // Add click handlers
+      document.querySelectorAll('.practitioner-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const practitioner = this.dataset.practitioner;
 
-        <a href="appointments-book-step3.html?doctor=nurse" class="card card-interactive" style="display: block;">
-          <div class="card-body">
-            <div style="display: flex; align-items: center; gap: var(--space-3);">
-              <div class="avatar" style="background-color: #059669;">RT</div>
-              <div style="flex: 1;">
-                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Nurse Rebecca Torres</h3>
-                <p class="text-small text-muted" style="margin-bottom: var(--space-1);">Practice Nurse</p>
-                <p class="text-small" style="color: var(--color-success);">Next available: Today</p>
-              </div>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </div>
-          </div>
-        </a>
-      </div>
-    </main>
-  </div>
+          // If "any", find the first available
+          if (practitioner === 'any') {
+            // Find practitioner with soonest availability
+            let soonest = null;
+            let soonestDate = null;
+
+            Object.keys(AppointmentsModule.PRACTITIONERS).forEach(id => {
+              const nextDate = AppointmentsModule.getNextAvailableDate(id);
+              if (nextDate && (!soonestDate || nextDate < soonestDate)) {
+                soonestDate = nextDate;
+                soonest = id;
+              }
+            });
+
+            if (soonest) {
+              AppointmentsModule.updateBookingState({ practitioner: soonest });
+            }
+          } else {
+            AppointmentsModule.updateBookingState({ practitioner: practitioner });
+          }
+
+          // Navigate to step 3
+          window.location.href = 'appointments-book-step3.html';
+        });
+      });
+    });
+  </script>
 </body>
 </html>

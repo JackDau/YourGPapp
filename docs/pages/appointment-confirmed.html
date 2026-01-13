@@ -18,10 +18,10 @@
       <div class="card" style="width: 100%; max-width: 320px; margin-bottom: var(--space-5);">
         <div class="card-body text-center">
           <div style="font-size: 2rem; margin-bottom: var(--space-2);">📅</div>
-          <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--space-1);">Tuesday, 21 January 2026</h3>
-          <p style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3);">9:30 AM</p>
-          <p style="margin-bottom: var(--space-1);">👨‍⚕️ Dr. James Wilson</p>
-          <p class="text-small text-muted">🏥 Standard Consultation</p>
+          <h3 id="appointmentDate" style="font-size: var(--font-size-lg); margin-bottom: var(--space-1);">Loading...</h3>
+          <p id="appointmentTime" style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-3);">--:-- AM</p>
+          <p id="practitionerInfo" style="margin-bottom: var(--space-1);">Loading...</p>
+          <p id="typeInfo" class="text-small text-muted">Loading...</p>
         </div>
       </div>
 
@@ -29,14 +29,81 @@
         A confirmation has been sent to your email and phone.
       </p>
 
-      <a href="#" class="btn btn-secondary btn-lg mb-3" style="width: 100%; max-width: 320px;">
+      <a href="#" id="calendarBtn" class="btn btn-secondary btn-lg mb-3" style="width: 100%; max-width: 320px;">
         Add to Calendar
       </a>
 
-      <a href="dashboard.html" class="btn btn-primary btn-lg" style="width: 100%; max-width: 320px;">
+      <a href="appointments.html" class="btn btn-primary btn-lg mb-3" style="width: 100%; max-width: 320px;">
+        View My Appointments
+      </a>
+
+      <a href="dashboard.html" class="btn btn-ghost btn-lg" style="width: 100%; max-width: 320px;">
         Back to Home
       </a>
     </div>
   </div>
+
+  <script src="../js/appointments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the confirmed appointment from session storage
+      const confirmedData = sessionStorage.getItem('yourgp_confirmed_appointment');
+
+      if (!confirmedData) {
+        // No confirmed appointment, redirect to appointments
+        window.location.href = 'appointments.html';
+        return;
+      }
+
+      const appointment = JSON.parse(confirmedData);
+
+      // Format the date from dateTime
+      const dateObj = new Date(appointment.dateTime);
+      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const formattedDate = dateObj.toLocaleDateString('en-AU', options);
+
+      // Format the time
+      const hour24 = dateObj.getHours();
+      const minutes = dateObj.getMinutes();
+      const period = hour24 >= 12 ? 'PM' : 'AM';
+      const hour12 = hour24 > 12 ? hour24 - 12 : (hour24 === 0 ? 12 : hour24);
+      const timeStr = `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+
+      // Get type info for icon
+      const typeInfo = AppointmentsModule.APPOINTMENT_TYPES[appointment.typeId];
+      const icon = typeInfo ? typeInfo.icon : '🏥';
+
+      // Update the display
+      document.getElementById('appointmentDate').textContent = formattedDate;
+      document.getElementById('appointmentTime').textContent = timeStr;
+      document.getElementById('practitionerInfo').innerHTML = `<span style="margin-right: 4px;">👨‍⚕️</span> ${appointment.practitionerName}`;
+      document.getElementById('typeInfo').innerHTML = `<span style="margin-right: 4px;">${icon}</span> ${appointment.typeName}`;
+
+      // Add to Calendar functionality
+      document.getElementById('calendarBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const startDate = new Date(appointment.dateTime);
+        const endDate = new Date(startDate);
+        endDate.setMinutes(endDate.getMinutes() + appointment.duration);
+
+        // Format for Google Calendar
+        const formatForCal = (date) => {
+          return date.toISOString().replace(/-|:|\.\d{3}/g, '');
+        };
+
+        const title = encodeURIComponent(`${appointment.typeName} with ${appointment.practitionerName}`);
+        const details = encodeURIComponent(`Your GP Appointment\n${appointment.mode === 'telehealth' ? 'Video consultation' : 'In-person at Your GP'}`);
+        const location = encodeURIComponent(appointment.mode === 'telehealth' ? 'Video Call' : 'Your GP, 123 Example Street, Canberra ACT 2600');
+
+        const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatForCal(startDate)}/${formatForCal(endDate)}&details=${details}&location=${location}`;
+
+        window.open(googleUrl, '_blank');
+      });
+
+      // Clear the session data after displaying
+      sessionStorage.removeItem('yourgp_confirmed_appointment');
+    });
+  </script>
 </body>
 </html>

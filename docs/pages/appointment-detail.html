@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment Details - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="appointments.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Appointment Details</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main no-nav">
+      <div class="page">
+        <!-- Status Banner (for upcoming appointments) -->
+        <div id="statusBanner" class="alert alert-info mb-4" style="display: none;">
+          <span id="statusIcon">📅</span>
+          <span id="statusText">Upcoming appointment</span>
+        </div>
+
+        <!-- Appointment Summary Card -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <div style="text-align: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200); margin-bottom: var(--space-4);">
+              <div id="appointmentIcon" style="font-size: 2rem; margin-bottom: var(--space-2);">📅</div>
+              <h3 id="appointmentDate" style="font-size: var(--font-size-lg); margin-bottom: var(--space-1);">Loading...</h3>
+              <p id="appointmentTimeRange" style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">--:-- AM</p>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200);">
+              <div id="practitionerAvatar" class="avatar" style="width: 40px; height: 40px; font-size: var(--font-size-sm);">--</div>
+              <div>
+                <p class="text-small text-muted">Practitioner</p>
+                <p id="practitionerName" style="font-weight: var(--font-weight-medium);">Loading...</p>
+                <p id="practitionerTitle" class="text-small text-muted">--</p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200);">
+              <span id="typeIcon" style="font-size: 1.25rem;">🏥</span>
+              <div>
+                <p class="text-small text-muted">Appointment Type</p>
+                <p id="typeName" style="font-weight: var(--font-weight-medium);">Loading...</p>
+                <p id="typeDetails" class="text-small text-muted">-- minutes</p>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) 0;">
+              <span id="locationIcon" style="font-size: 1.25rem;">📍</span>
+              <div>
+                <p class="text-small text-muted">Location</p>
+                <p id="locationName" style="font-weight: var(--font-weight-medium);">Your GP</p>
+                <p id="locationAddress" class="text-small text-muted">123 Example Street<br>Canberra ACT 2600</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reason for visit (if provided) -->
+        <div id="reasonSection" class="card mb-4" style="display: none;">
+          <div class="card-body">
+            <h4 class="text-small text-muted mb-2">Reason for Visit</h4>
+            <p id="reasonText" style="font-size: var(--font-size-base);"></p>
+          </div>
+        </div>
+
+        <!-- Actions for upcoming appointments -->
+        <div id="upcomingActions" style="display: none;">
+          <a href="#" id="addToCalendarBtn" class="btn btn-secondary btn-block mb-3">
+            Add to Calendar
+          </a>
+
+          <button type="button" id="rescheduleBtn" class="btn btn-secondary btn-block mb-3">
+            Reschedule Appointment
+          </button>
+
+          <button type="button" id="cancelBtn" class="btn btn-ghost btn-block" style="color: var(--color-error);">
+            Cancel Appointment
+          </button>
+        </div>
+
+        <!-- Past appointment note -->
+        <div id="pastNote" class="alert alert-gray" style="display: none;">
+          <span>This appointment has already occurred.</span>
+        </div>
+
+        <!-- Cancelled note -->
+        <div id="cancelledNote" class="alert alert-error" style="display: none;">
+          <span>This appointment has been cancelled.</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Cancel Confirmation Modal -->
+  <div id="cancelModal" class="modal" style="display: none;">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <h3 style="margin-bottom: var(--space-3);">Cancel Appointment?</h3>
+      <p class="text-muted mb-4">Are you sure you want to cancel this appointment? This action cannot be undone.</p>
+      <div style="display: flex; gap: var(--space-3);">
+        <button type="button" id="cancelModalNo" class="btn btn-secondary" style="flex: 1;">No, Keep It</button>
+        <button type="button" id="cancelModalYes" class="btn btn-primary" style="flex: 1; background-color: var(--color-error);">Yes, Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1000;
+    }
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: white;
+      padding: var(--space-5);
+      border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .alert-gray {
+      background-color: var(--color-gray-100);
+      color: var(--color-gray-700);
+    }
+    .alert-error {
+      background-color: #fee2e2;
+      color: var(--color-error);
+    }
+  </style>
+
+  <script src="../js/appointments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get appointment ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const appointmentId = urlParams.get('id');
+
+      if (!appointmentId) {
+        window.location.href = 'appointments.html';
+        return;
+      }
+
+      // Get appointment from storage
+      const appointment = AppointmentsModule.getAppointmentById(appointmentId);
+
+      if (!appointment) {
+        window.location.href = 'appointments.html';
+        return;
+      }
+
+      const practitioner = AppointmentsModule.PRACTITIONERS[appointment.practitionerId];
+      const typeInfo = AppointmentsModule.APPOINTMENT_TYPES[appointment.typeId];
+
+      // Get date and time from dateTime
+      const dateObj = new Date(appointment.dateTime);
+      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const formattedDate = dateObj.toLocaleDateString('en-AU', options);
+
+      // Format start time
+      const hour24 = dateObj.getHours();
+      const minutes = dateObj.getMinutes();
+      const startPeriod = hour24 >= 12 ? 'PM' : 'AM';
+      const startHour12 = hour24 > 12 ? hour24 - 12 : (hour24 === 0 ? 12 : hour24);
+      const startTime = `${startHour12}:${minutes.toString().padStart(2, '0')} ${startPeriod}`;
+
+      // Calculate end time
+      const endMinutes = hour24 * 60 + minutes + appointment.duration;
+      const endHour24 = Math.floor(endMinutes / 60);
+      const endMin = endMinutes % 60;
+      const endPeriod = endHour24 >= 12 ? 'PM' : 'AM';
+      const endHour12 = endHour24 > 12 ? endHour24 - 12 : (endHour24 === 0 ? 12 : endHour24);
+      const endTime = `${endHour12}:${endMin.toString().padStart(2, '0')} ${endPeriod}`;
+
+      // Update display
+      document.getElementById('appointmentIcon').textContent = appointment.mode === 'telehealth' ? '📹' : '📅';
+      document.getElementById('appointmentDate').textContent = formattedDate;
+      document.getElementById('appointmentTimeRange').textContent = `${startTime} - ${endTime}`;
+
+      // Practitioner
+      const avatarEl = document.getElementById('practitionerAvatar');
+      avatarEl.textContent = appointment.practitionerInitials;
+      avatarEl.style.backgroundColor = appointment.practitionerColor;
+      document.getElementById('practitionerName').textContent = appointment.practitionerName;
+      document.getElementById('practitionerTitle').textContent = appointment.practitionerTitle;
+
+      // Type
+      document.getElementById('typeIcon').textContent = typeInfo ? typeInfo.icon : '🏥';
+      document.getElementById('typeName').textContent = appointment.typeName;
+      const modeText = appointment.mode === 'telehealth' ? 'Video call' : 'In-person';
+      document.getElementById('typeDetails').textContent = `${appointment.duration} minutes, ${modeText}`;
+
+      // Location
+      if (appointment.mode === 'telehealth') {
+        document.getElementById('locationIcon').textContent = '💻';
+        document.getElementById('locationName').textContent = 'Video Consultation';
+        document.getElementById('locationAddress').innerHTML = 'A video link will be sent to your<br>email before the appointment.';
+      }
+
+      // Reason for visit
+      if (appointment.reason) {
+        document.getElementById('reasonSection').style.display = 'block';
+        document.getElementById('reasonText').textContent = appointment.reason;
+      }
+
+      // Check if upcoming or past
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const apptDateOnly = new Date(dateObj);
+      apptDateOnly.setHours(0, 0, 0, 0);
+      const isUpcoming = apptDateOnly >= today && appointment.status !== 'cancelled';
+      const isPast = apptDateOnly < today;
+      const isCancelled = appointment.status === 'cancelled';
+
+      if (isCancelled) {
+        document.getElementById('cancelledNote').style.display = 'flex';
+      } else if (isUpcoming) {
+        // Show status banner
+        const statusBanner = document.getElementById('statusBanner');
+        statusBanner.style.display = 'flex';
+
+        const diffTime = apptDateOnly - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) {
+          document.getElementById('statusIcon').textContent = '✨';
+          document.getElementById('statusText').textContent = 'Today';
+          statusBanner.classList.remove('alert-info');
+          statusBanner.classList.add('alert-success');
+        } else if (diffDays === 1) {
+          document.getElementById('statusText').textContent = 'Tomorrow';
+        } else {
+          document.getElementById('statusText').textContent = `In ${diffDays} days`;
+        }
+
+        // Show action buttons
+        document.getElementById('upcomingActions').style.display = 'block';
+
+        // Add to calendar
+        document.getElementById('addToCalendarBtn').addEventListener('click', function(e) {
+          e.preventDefault();
+
+          const startDate = new Date(appointment.dateTime);
+          const endDate = new Date(startDate);
+          endDate.setMinutes(endDate.getMinutes() + appointment.duration);
+
+          const formatForCal = (date) => {
+            return date.toISOString().replace(/-|:|\.\d{3}/g, '');
+          };
+
+          const title = encodeURIComponent(`${appointment.typeName} with ${appointment.practitionerName}`);
+          const details = encodeURIComponent(`Your GP Appointment\n${appointment.mode === 'telehealth' ? 'Video consultation' : 'In-person at Your GP'}`);
+          const location = encodeURIComponent(appointment.mode === 'telehealth' ? 'Video Call' : 'Your GP, 123 Example Street, Canberra ACT 2600');
+
+          const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${formatForCal(startDate)}/${formatForCal(endDate)}&details=${details}&location=${location}`;
+
+          window.open(googleUrl, '_blank');
+        });
+
+        // Reschedule
+        document.getElementById('rescheduleBtn').addEventListener('click', function() {
+          // Store the appointment being rescheduled
+          sessionStorage.setItem('yourgp_reschedule_id', appointmentId);
+
+          // Start new booking with pre-filled type
+          AppointmentsModule.updateBookingState({
+            type: appointment.typeId,
+            practitioner: appointment.practitionerId
+          });
+
+          window.location.href = 'appointments-book-step3.html';
+        });
+
+        // Cancel
+        const cancelModal = document.getElementById('cancelModal');
+
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+          cancelModal.style.display = 'block';
+        });
+
+        document.getElementById('cancelModalNo').addEventListener('click', function() {
+          cancelModal.style.display = 'none';
+        });
+
+        document.querySelector('.modal-overlay').addEventListener('click', function() {
+          cancelModal.style.display = 'none';
+        });
+
+        document.getElementById('cancelModalYes').addEventListener('click', function() {
+          AppointmentsModule.cancelAppointment(appointmentId);
+          window.location.href = 'appointments.html';
+        });
+
+      } else if (isPast) {
+        document.getElementById('pastNote').style.display = 'flex';
+      }
+    });
+  </script>
+</body>
+</html>

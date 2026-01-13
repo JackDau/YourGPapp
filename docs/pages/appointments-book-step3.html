@@ -26,9 +26,14 @@
       justify-content: center;
       border-radius: var(--radius-md);
       color: var(--color-gray-600);
+      cursor: pointer;
     }
     .calendar-nav:hover {
       background-color: var(--color-gray-100);
+    }
+    .calendar-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
     }
     .calendar-title {
       font-weight: var(--font-weight-semibold);
@@ -61,12 +66,15 @@
       cursor: pointer;
       transition: all var(--transition-fast);
     }
-    .calendar-day:hover:not(.disabled):not(.selected) {
+    .calendar-day:hover:not(.disabled):not(.selected):not(.empty) {
       background-color: var(--color-gray-100);
     }
     .calendar-day.disabled {
       color: var(--color-gray-300);
       cursor: not-allowed;
+    }
+    .calendar-day.empty {
+      cursor: default;
     }
     .calendar-day.selected {
       background-color: var(--color-primary);
@@ -76,8 +84,9 @@
     .calendar-day.today {
       border: 2px solid var(--color-primary);
     }
-    .calendar-day.has-slots {
+    .calendar-day.available {
       font-weight: var(--font-weight-medium);
+      color: var(--color-black);
     }
 
     .time-slots {
@@ -96,13 +105,19 @@
       cursor: pointer;
       transition: all var(--transition-fast);
     }
-    .time-slot:hover {
+    .time-slot:hover:not(.selected) {
       border-color: var(--color-primary);
     }
     .time-slot.selected {
       background-color: var(--color-primary);
       color: var(--color-white);
       border-color: var(--color-primary);
+    }
+
+    .no-slots {
+      text-align: center;
+      padding: var(--space-6);
+      color: var(--color-gray-500);
     }
   </style>
 </head>
@@ -153,11 +168,11 @@
         </div>
 
         <!-- Selected Info -->
-        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
-          <div class="avatar">JW</div>
+        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);" id="selectedInfo">
+          <div class="avatar" id="practitionerAvatar">--</div>
           <div>
-            <h3 style="font-size: var(--font-size-base);">Dr. James Wilson</h3>
-            <p class="text-small text-muted">Standard Consultation (15 min)</p>
+            <h3 style="font-size: var(--font-size-base);" id="practitionerName">Loading...</h3>
+            <p class="text-small text-muted" id="appointmentType">Loading...</p>
           </div>
         </div>
 
@@ -166,13 +181,13 @@
         <!-- Calendar -->
         <div class="calendar">
           <div class="calendar-header">
-            <button class="calendar-nav">
+            <button class="calendar-nav" id="prevMonth">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
             </button>
-            <span class="calendar-title">January 2026</span>
-            <button class="calendar-nav">
+            <span class="calendar-title" id="calendarTitle">Loading...</span>
+            <button class="calendar-nav" id="nextMonth">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
@@ -187,85 +202,222 @@
             <div class="calendar-weekday">Sat</div>
             <div class="calendar-weekday">Sun</div>
           </div>
-          <div class="calendar-days">
-            <div class="calendar-day disabled"></div>
-            <div class="calendar-day disabled"></div>
-            <div class="calendar-day disabled">1</div>
-            <div class="calendar-day disabled">2</div>
-            <div class="calendar-day disabled">3</div>
-            <div class="calendar-day disabled">4</div>
-            <div class="calendar-day disabled">5</div>
-            <div class="calendar-day disabled">6</div>
-            <div class="calendar-day disabled">7</div>
-            <div class="calendar-day disabled">8</div>
-            <div class="calendar-day disabled">9</div>
-            <div class="calendar-day disabled">10</div>
-            <div class="calendar-day disabled">11</div>
-            <div class="calendar-day disabled">12</div>
-            <div class="calendar-day today has-slots" onclick="selectDate(this)">13</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">14</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">15</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">16</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">17</div>
-            <div class="calendar-day disabled">18</div>
-            <div class="calendar-day disabled">19</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">20</div>
-            <div class="calendar-day has-slots selected" onclick="selectDate(this)">21</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">22</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">23</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">24</div>
-            <div class="calendar-day disabled">25</div>
-            <div class="calendar-day disabled">26</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">27</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">28</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">29</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">30</div>
-            <div class="calendar-day has-slots" onclick="selectDate(this)">31</div>
+          <div class="calendar-days" id="calendarDays">
+            <!-- Will be populated by JavaScript -->
           </div>
         </div>
 
-        <!-- Time Slots -->
-        <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-3);">Tuesday, 21 January 2026</h3>
+        <!-- Time Slots Section -->
+        <div id="timeSlotsSection">
+          <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-3);" id="selectedDateTitle">Select a date above</h3>
 
-        <h4 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">Morning</h4>
-        <div class="time-slots mb-4">
-          <div class="time-slot" onclick="selectTime(this)">8:00 AM</div>
-          <div class="time-slot" onclick="selectTime(this)">8:15 AM</div>
-          <div class="time-slot" onclick="selectTime(this)">8:30 AM</div>
-          <div class="time-slot" onclick="selectTime(this)">9:00 AM</div>
-          <div class="time-slot selected" onclick="selectTime(this)">9:30 AM</div>
-          <div class="time-slot" onclick="selectTime(this)">10:00 AM</div>
-          <div class="time-slot" onclick="selectTime(this)">10:30 AM</div>
-          <div class="time-slot" onclick="selectTime(this)">11:00 AM</div>
-          <div class="time-slot" onclick="selectTime(this)">11:30 AM</div>
+          <div id="timeSlotsContainer">
+            <p class="no-slots">Please select a date to view available times</p>
+          </div>
         </div>
 
-        <h4 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">Afternoon</h4>
-        <div class="time-slots mb-5">
-          <div class="time-slot" onclick="selectTime(this)">2:00 PM</div>
-          <div class="time-slot" onclick="selectTime(this)">2:30 PM</div>
-          <div class="time-slot" onclick="selectTime(this)">3:00 PM</div>
-          <div class="time-slot" onclick="selectTime(this)">3:30 PM</div>
-          <div class="time-slot" onclick="selectTime(this)">4:00 PM</div>
-          <div class="time-slot" onclick="selectTime(this)">4:30 PM</div>
-        </div>
-
-        <a href="appointments-book-step4.html" class="btn btn-primary btn-block btn-lg">
+        <button class="btn btn-primary btn-block btn-lg mt-5" id="continueBtn" disabled>
           Continue
-        </a>
+        </button>
       </div>
     </main>
   </div>
 
+  <script src="../js/appointments.js"></script>
   <script>
-    function selectDate(el) {
-      document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
-      el.classList.add('selected');
+    let currentMonth = new Date();
+    let selectedDate = null;
+    let selectedTime = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const state = AppointmentsModule.getBookingState();
+
+      // Check if we have required state
+      if (!state.type || !state.practitioner) {
+        window.location.href = 'appointments-book-step1.html';
+        return;
+      }
+
+      // Get info
+      const typeInfo = AppointmentsModule.APPOINTMENT_TYPES[state.type];
+      const practitioner = AppointmentsModule.PRACTITIONERS[state.practitioner];
+
+      // Update display
+      document.getElementById('practitionerAvatar').textContent = practitioner.initials;
+      document.getElementById('practitionerAvatar').style.backgroundColor = practitioner.color;
+      document.getElementById('practitionerName').textContent = practitioner.name;
+      document.getElementById('appointmentType').textContent = `${typeInfo.name} (${typeInfo.duration} min)`;
+
+      // Set current month to today
+      currentMonth = new Date();
+
+      // Render calendar
+      renderCalendar();
+
+      // Event listeners
+      document.getElementById('prevMonth').addEventListener('click', () => {
+        currentMonth.setMonth(currentMonth.getMonth() - 1);
+        renderCalendar();
+      });
+
+      document.getElementById('nextMonth').addEventListener('click', () => {
+        currentMonth.setMonth(currentMonth.getMonth() + 1);
+        renderCalendar();
+      });
+
+      document.getElementById('continueBtn').addEventListener('click', () => {
+        if (selectedDate && selectedTime) {
+          AppointmentsModule.updateBookingState({
+            date: AppointmentsModule.formatDateISO(selectedDate),
+            time: selectedTime
+          });
+          window.location.href = 'appointments-book-step4.html';
+        }
+      });
+    });
+
+    function renderCalendar() {
+      const state = AppointmentsModule.getBookingState();
+      const practitionerId = state.practitioner;
+
+      // Update title
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+      document.getElementById('calendarTitle').textContent =
+        `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+
+      // Disable prev button if at current month
+      const today = new Date();
+      const isPastMonth = currentMonth.getFullYear() < today.getFullYear() ||
+        (currentMonth.getFullYear() === today.getFullYear() && currentMonth.getMonth() < today.getMonth());
+      const isCurrentMonth = currentMonth.getFullYear() === today.getFullYear() &&
+        currentMonth.getMonth() === today.getMonth();
+
+      document.getElementById('prevMonth').disabled = isPastMonth || isCurrentMonth;
+
+      // Get first day of month and number of days
+      const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+      const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+      const daysInMonth = lastDay.getDate();
+
+      // Get starting day (0 = Sunday, we want Monday = 0)
+      let startDay = firstDay.getDay() - 1;
+      if (startDay < 0) startDay = 6;
+
+      // Get available dates for this practitioner
+      const availableDates = AppointmentsModule.getAvailableDates(practitionerId, firstDay, daysInMonth + 7);
+      const availableDatesSet = new Set(availableDates.map(d =>
+        `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+      ));
+
+      // Build calendar HTML
+      let html = '';
+
+      // Empty cells before first day
+      for (let i = 0; i < startDay; i++) {
+        html += '<div class="calendar-day empty"></div>';
+      }
+
+      // Days of month
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+        const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+        const isToday = date.toDateString() === today.toDateString();
+        const isPast = date < today && !isToday;
+        const isAvailable = availableDatesSet.has(dateKey) && !isPast;
+        const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+
+        let classes = ['calendar-day'];
+        if (isToday) classes.push('today');
+        if (isPast || !isAvailable) classes.push('disabled');
+        if (isAvailable) classes.push('available');
+        if (isSelected) classes.push('selected');
+
+        html += `<div class="${classes.join(' ')}" data-date="${dateKey}">${day}</div>`;
+      }
+
+      document.getElementById('calendarDays').innerHTML = html;
+
+      // Add click handlers
+      document.querySelectorAll('.calendar-day.available').forEach(el => {
+        el.addEventListener('click', function() {
+          const [year, month, day] = this.dataset.date.split('-').map(Number);
+          selectDate(new Date(year, month, day));
+        });
+      });
     }
 
-    function selectTime(el) {
-      document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
-      el.classList.add('selected');
+    function selectDate(date) {
+      selectedDate = date;
+      selectedTime = null;
+
+      // Update calendar UI
+      document.querySelectorAll('.calendar-day').forEach(el => el.classList.remove('selected'));
+      const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+      const dayEl = document.querySelector(`.calendar-day[data-date="${dateKey}"]`);
+      if (dayEl) dayEl.classList.add('selected');
+
+      // Update date title
+      document.getElementById('selectedDateTitle').textContent = AppointmentsModule.formatDateDisplay(date);
+
+      // Load time slots
+      renderTimeSlots();
+
+      // Update continue button
+      updateContinueButton();
+    }
+
+    function renderTimeSlots() {
+      const state = AppointmentsModule.getBookingState();
+      const typeInfo = AppointmentsModule.APPOINTMENT_TYPES[state.type];
+      const slots = AppointmentsModule.getAvailableSlots(state.practitioner, selectedDate, typeInfo.duration);
+
+      if (slots.length === 0) {
+        document.getElementById('timeSlotsContainer').innerHTML =
+          '<p class="no-slots">No available times for this date. Please select another date.</p>';
+        return;
+      }
+
+      // Split into morning and afternoon
+      const morningSlots = slots.filter(s => parseInt(s.split(':')[0]) < 12);
+      const afternoonSlots = slots.filter(s => parseInt(s.split(':')[0]) >= 12);
+
+      let html = '';
+
+      if (morningSlots.length > 0) {
+        html += '<h4 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">Morning</h4>';
+        html += '<div class="time-slots mb-4">';
+        morningSlots.forEach(slot => {
+          html += `<div class="time-slot" data-time="${slot}">${AppointmentsModule.formatTimeSlot(slot)}</div>`;
+        });
+        html += '</div>';
+      }
+
+      if (afternoonSlots.length > 0) {
+        html += '<h4 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">Afternoon</h4>';
+        html += '<div class="time-slots mb-4">';
+        afternoonSlots.forEach(slot => {
+          html += `<div class="time-slot" data-time="${slot}">${AppointmentsModule.formatTimeSlot(slot)}</div>`;
+        });
+        html += '</div>';
+      }
+
+      document.getElementById('timeSlotsContainer').innerHTML = html;
+
+      // Add click handlers
+      document.querySelectorAll('.time-slot').forEach(el => {
+        el.addEventListener('click', function() {
+          document.querySelectorAll('.time-slot').forEach(t => t.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedTime = this.dataset.time;
+          updateContinueButton();
+        });
+      });
+    }
+
+    function updateContinueButton() {
+      const btn = document.getElementById('continueBtn');
+      btn.disabled = !(selectedDate && selectedTime);
     }
   </script>
 </body>

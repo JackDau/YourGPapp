@@ -59,34 +59,34 @@
           <div class="card-body">
             <div style="text-align: center; padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200); margin-bottom: var(--space-4);">
               <div style="font-size: 2rem; margin-bottom: var(--space-2);">📅</div>
-              <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--space-1);">Tuesday, 21 January 2026</h3>
-              <p style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">9:30 AM - 9:45 AM</p>
+              <h3 id="appointmentDate" style="font-size: var(--font-size-lg); margin-bottom: var(--space-1);">Loading...</h3>
+              <p id="appointmentTimeRange" style="font-size: var(--font-size-xl); font-weight: var(--font-weight-semibold);">--:-- AM</p>
             </div>
 
             <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200);">
-              <span style="font-size: 1.25rem;">👨‍⚕️</span>
+              <div id="practitionerAvatar" class="avatar" style="width: 40px; height: 40px; font-size: var(--font-size-sm);">--</div>
               <div>
                 <p class="text-small text-muted">Practitioner</p>
-                <p style="font-weight: var(--font-weight-medium);">Dr. James Wilson</p>
-                <p class="text-small text-muted">General Practitioner</p>
+                <p id="practitionerName" style="font-weight: var(--font-weight-medium);">Loading...</p>
+                <p id="practitionerTitle" class="text-small text-muted">--</p>
               </div>
             </div>
 
             <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) 0; border-bottom: 1px solid var(--color-gray-200);">
-              <span style="font-size: 1.25rem;">🏥</span>
+              <span id="typeIcon" style="font-size: 1.25rem;">🏥</span>
               <div>
                 <p class="text-small text-muted">Appointment Type</p>
-                <p style="font-weight: var(--font-weight-medium);">Standard Consultation</p>
-                <p class="text-small text-muted">15 minutes, In-person</p>
+                <p id="typeName" style="font-weight: var(--font-weight-medium);">Loading...</p>
+                <p id="typeDetails" class="text-small text-muted">-- minutes</p>
               </div>
             </div>
 
             <div style="display: flex; align-items: flex-start; gap: var(--space-3); padding: var(--space-3) 0;">
-              <span style="font-size: 1.25rem;">📍</span>
+              <span style="font-size: 1.25rem;" id="locationIcon">📍</span>
               <div>
                 <p class="text-small text-muted">Location</p>
-                <p style="font-weight: var(--font-weight-medium);">Your GP</p>
-                <p class="text-small text-muted">123 Example Street<br>Canberra ACT 2600</p>
+                <p id="locationName" style="font-weight: var(--font-weight-medium);">Your GP</p>
+                <p id="locationAddress" class="text-small text-muted">123 Example Street<br>Canberra ACT 2600</p>
               </div>
             </div>
           </div>
@@ -106,16 +106,16 @@
 
         <!-- Reminder Checkbox -->
         <label class="form-check mb-5">
-          <input type="checkbox" class="form-check-input" checked>
+          <input type="checkbox" id="sendReminder" class="form-check-input" checked>
           <span class="form-check-label">
             Send me a reminder 24 hours before
           </span>
         </label>
 
         <!-- Confirm Button -->
-        <a href="appointment-confirmed.html" class="btn btn-primary btn-block btn-lg mb-3">
+        <button type="button" id="confirmBtn" class="btn btn-primary btn-block btn-lg mb-3">
           Confirm Appointment
-        </a>
+        </button>
 
         <p class="text-center text-small text-muted">
           By confirming, you agree to our <a href="#">cancellation policy</a>.
@@ -123,5 +123,88 @@
       </div>
     </main>
   </div>
+
+  <script src="../js/appointments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const state = AppointmentsModule.getBookingState();
+
+      // Check if we have all required booking data
+      if (!state.type || !state.practitioner || !state.date || !state.time) {
+        window.location.href = 'appointments-book-step1.html';
+        return;
+      }
+
+      const typeInfo = AppointmentsModule.APPOINTMENT_TYPES[state.type];
+      const practitioner = AppointmentsModule.PRACTITIONERS[state.practitioner];
+
+      // Format the date
+      const dateObj = new Date(state.date + 'T00:00:00');
+      const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+      const formattedDate = dateObj.toLocaleDateString('en-AU', options);
+
+      // Calculate end time
+      const [time, period] = state.time.split(' ');
+      const [hours, minutes] = time.split(':').map(Number);
+      let hour24 = hours;
+      if (period === 'PM' && hours !== 12) hour24 += 12;
+      if (period === 'AM' && hours === 12) hour24 = 0;
+
+      const endMinutes = (hour24 * 60 + minutes + typeInfo.duration);
+      const endHour24 = Math.floor(endMinutes / 60);
+      const endMin = endMinutes % 60;
+      const endPeriod = endHour24 >= 12 ? 'PM' : 'AM';
+      const endHour12 = endHour24 > 12 ? endHour24 - 12 : (endHour24 === 0 ? 12 : endHour24);
+      const endTime = `${endHour12}:${endMin.toString().padStart(2, '0')} ${endPeriod}`;
+
+      // Update appointment date and time
+      document.getElementById('appointmentDate').textContent = formattedDate;
+      document.getElementById('appointmentTimeRange').textContent = `${state.time} - ${endTime}`;
+
+      // Update practitioner
+      const avatarEl = document.getElementById('practitionerAvatar');
+      avatarEl.textContent = practitioner.initials;
+      avatarEl.style.backgroundColor = practitioner.color;
+      document.getElementById('practitionerName').textContent = practitioner.name;
+      document.getElementById('practitionerTitle').textContent = practitioner.title;
+
+      // Update appointment type
+      document.getElementById('typeIcon').textContent = typeInfo.icon;
+      document.getElementById('typeName').textContent = typeInfo.name;
+
+      const modeText = typeInfo.mode === 'telehealth' ? 'Video call' : 'In-person';
+      document.getElementById('typeDetails').textContent = `${typeInfo.duration} minutes, ${modeText}`;
+
+      // Update location based on mode
+      if (typeInfo.mode === 'telehealth') {
+        document.getElementById('locationIcon').textContent = '💻';
+        document.getElementById('locationName').textContent = 'Video Consultation';
+        document.getElementById('locationAddress').innerHTML = 'A video link will be sent to your<br>email before the appointment.';
+      }
+
+      // Handle confirmation
+      document.getElementById('confirmBtn').addEventListener('click', function() {
+        const reason = document.getElementById('reason').value.trim();
+        const sendReminder = document.getElementById('sendReminder').checked;
+
+        // Update state with reason and reminder preference
+        AppointmentsModule.updateBookingState({
+          reason: reason,
+          sendReminder: sendReminder
+        });
+
+        // Complete the booking
+        const newAppointment = AppointmentsModule.completeBooking();
+
+        if (newAppointment) {
+          // Store the confirmed appointment for the success page
+          sessionStorage.setItem('yourgp_confirmed_appointment', JSON.stringify(newAppointment));
+          window.location.href = 'appointment-confirmed.html';
+        } else {
+          alert('There was an error booking your appointment. Please try again.');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

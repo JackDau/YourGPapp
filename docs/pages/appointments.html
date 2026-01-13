@@ -31,48 +31,8 @@
           <h2 class="section-title">Upcoming</h2>
         </div>
 
-        <div style="padding: 0 var(--space-4);">
-          <!-- Appointment Card 1 -->
-          <a href="appointment-detail.html" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 48px; height: 48px; background-color: var(--color-info-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                  📅
-                </div>
-                <div style="flex: 1;">
-                  <div class="badge badge-info" style="margin-bottom: var(--space-2);">Tomorrow</div>
-                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dr. James Wilson</h3>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-1);">Standard Consultation</p>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">9:30 AM - 9:45 AM</p>
-                  <span class="badge badge-gray">In-person</span>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
-
-          <!-- Appointment Card 2 -->
-          <a href="appointment-detail-telehealth.html" class="card card-interactive" style="display: block;">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 48px; height: 48px; background-color: #dbeafe; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                  📹
-                </div>
-                <div style="flex: 1;">
-                  <div style="font-size: var(--font-size-sm); color: var(--color-gray-600); margin-bottom: var(--space-2);">Friday, 24 Jan</div>
-                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dr. Emily Chen</h3>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-1);">Long Telehealth</p>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">2:00 PM - 2:30 PM</p>
-                  <span class="badge badge-info">Video call</span>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
+        <div id="upcomingContainer" style="padding: 0 var(--space-4);">
+          <!-- Will be populated by JavaScript -->
         </div>
       </div>
 
@@ -82,44 +42,8 @@
           <h2 class="section-title">Past Appointments</h2>
         </div>
 
-        <div class="card" style="margin: 0 var(--space-4); border-radius: var(--radius-lg); overflow: hidden;">
-          <a href="#" class="list-item">
-            <div class="list-item-content">
-              <div class="list-item-title">Monday, 13 Jan</div>
-              <div class="list-item-subtitle">Dr. James Wilson - Standard Consultation</div>
-            </div>
-            <span class="list-item-arrow">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </span>
-          </a>
-          <a href="#" class="list-item">
-            <div class="list-item-content">
-              <div class="list-item-title">Wednesday, 8 Jan</div>
-              <div class="list-item-subtitle">Dr. Sarah Park - Long Consultation</div>
-            </div>
-            <span class="list-item-arrow">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </span>
-          </a>
-          <a href="#" class="list-item">
-            <div class="list-item-content">
-              <div class="list-item-title">Monday, 23 Dec</div>
-              <div class="list-item-subtitle">Dr. Emily Chen - Standard Telehealth</div>
-            </div>
-            <span class="list-item-arrow">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </span>
-          </a>
-        </div>
-
-        <div class="text-center mt-4">
-          <a href="#" class="text-small">Load More Past Appointments</a>
+        <div id="pastContainer" style="margin: 0 var(--space-4);">
+          <!-- Will be populated by JavaScript -->
         </div>
       </div>
     </main>
@@ -176,5 +100,158 @@
       </a>
     </nav>
   </div>
+
+  <script src="../js/appointments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const appointments = AppointmentsModule.getAppointments();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Separate upcoming and past appointments
+      const upcoming = [];
+      const past = [];
+
+      appointments.forEach(appt => {
+        const apptDate = new Date(appt.dateTime);
+        apptDate.setHours(0, 0, 0, 0);
+        if (apptDate >= today && appt.status !== 'cancelled') {
+          upcoming.push(appt);
+        } else {
+          past.push(appt);
+        }
+      });
+
+      // Sort upcoming by date (nearest first)
+      upcoming.sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+
+      // Sort past by date (most recent first)
+      past.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+
+      // Helper to format time
+      function formatTime(date) {
+        const d = new Date(date);
+        const hour24 = d.getHours();
+        const minutes = d.getMinutes();
+        const period = hour24 >= 12 ? 'PM' : 'AM';
+        const hour12 = hour24 > 12 ? hour24 - 12 : (hour24 === 0 ? 12 : hour24);
+        return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+      }
+
+      // Render upcoming appointments
+      const upcomingContainer = document.getElementById('upcomingContainer');
+
+      if (upcoming.length === 0) {
+        upcomingContainer.innerHTML = `
+          <div class="card" style="text-align: center; padding: var(--space-6);">
+            <div style="font-size: 2rem; margin-bottom: var(--space-3);">📅</div>
+            <p class="text-muted">No upcoming appointments</p>
+            <p class="text-small text-muted mt-2">Book an appointment to get started</p>
+          </div>
+        `;
+      } else {
+        upcomingContainer.innerHTML = upcoming.map(appt => {
+          const dateObj = new Date(appt.dateTime);
+          const dateOnly = new Date(dateObj);
+          dateOnly.setHours(0, 0, 0, 0);
+
+          // Calculate relative date
+          const diffTime = dateOnly - today;
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          let dateBadge = '';
+          let dateDisplay = '';
+
+          if (diffDays === 0) {
+            dateBadge = '<div class="badge badge-success" style="margin-bottom: var(--space-2);">Today</div>';
+          } else if (diffDays === 1) {
+            dateBadge = '<div class="badge badge-info" style="margin-bottom: var(--space-2);">Tomorrow</div>';
+          } else {
+            const options = { weekday: 'long', day: 'numeric', month: 'short' };
+            dateDisplay = `<div style="font-size: var(--font-size-sm); color: var(--color-gray-600); margin-bottom: var(--space-2);">${dateObj.toLocaleDateString('en-AU', options)}</div>`;
+          }
+
+          // Calculate times
+          const startTime = formatTime(appt.dateTime);
+          const endDate = new Date(appt.dateTime);
+          endDate.setMinutes(endDate.getMinutes() + appt.duration);
+          const endTime = formatTime(endDate);
+
+          const modeIcon = appt.mode === 'telehealth' ? '📹' : '📅';
+          const modeBg = appt.mode === 'telehealth' ? '#dbeafe' : 'var(--color-info-light)';
+          const modeBadge = appt.mode === 'telehealth'
+            ? '<span class="badge badge-info">Video call</span>'
+            : '<span class="badge badge-gray">In-person</span>';
+
+          return `
+            <a href="appointment-detail.html?id=${appt.id}" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+              <div class="card-body">
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 48px; height: 48px; background-color: ${modeBg}; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                    ${modeIcon}
+                  </div>
+                  <div style="flex: 1;">
+                    ${dateBadge}${dateDisplay}
+                    <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">${appt.practitionerName}</h3>
+                    <p class="text-small text-muted" style="margin-bottom: var(--space-1);">${appt.typeName}</p>
+                    <p class="text-small text-muted" style="margin-bottom: var(--space-2);">${startTime} - ${endTime}</p>
+                    ${modeBadge}
+                  </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
+      }
+
+      // Render past appointments
+      const pastContainer = document.getElementById('pastContainer');
+
+      if (past.length === 0) {
+        pastContainer.innerHTML = `
+          <div class="card" style="text-align: center; padding: var(--space-4);">
+            <p class="text-muted text-small">No past appointments</p>
+          </div>
+        `;
+      } else {
+        const pastHtml = past.slice(0, 5).map(appt => {
+          const dateObj = new Date(appt.dateTime);
+          const options = { weekday: 'long', day: 'numeric', month: 'short' };
+          const dateStr = dateObj.toLocaleDateString('en-AU', options);
+
+          return `
+            <a href="appointment-detail.html?id=${appt.id}" class="list-item">
+              <div class="list-item-content">
+                <div class="list-item-title">${dateStr}</div>
+                <div class="list-item-subtitle">${appt.practitionerName} - ${appt.typeName}</div>
+              </div>
+              <span class="list-item-arrow">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </span>
+            </a>
+          `;
+        }).join('');
+
+        pastContainer.innerHTML = `
+          <div class="card" style="border-radius: var(--radius-lg); overflow: hidden;">
+            ${pastHtml}
+          </div>
+        `;
+
+        if (past.length > 5) {
+          pastContainer.innerHTML += `
+            <div class="text-center mt-4">
+              <a href="#" class="text-small">Load More Past Appointments</a>
+            </div>
+          `;
+        }
+      }
+    });
+  </script>
 </body>
 </html>

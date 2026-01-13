@@ -57,7 +57,7 @@
         <!-- In-Person Section -->
         <h3 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">In-Person</h3>
 
-        <a href="appointments-book-step2.html?type=standard" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+        <div class="card card-interactive appointment-type-card" data-type="standard" style="display: block; margin-bottom: var(--space-3);">
           <div class="card-body">
             <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
               <div style="font-size: 1.5rem;">🏥</div>
@@ -71,9 +71,9 @@
               </svg>
             </div>
           </div>
-        </a>
+        </div>
 
-        <a href="appointments-book-step2.html?type=long" class="card card-interactive" style="display: block; margin-bottom: var(--space-5);">
+        <div class="card card-interactive appointment-type-card" data-type="long" style="display: block; margin-bottom: var(--space-5);">
           <div class="card-body">
             <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
               <div style="font-size: 1.5rem;">🏥</div>
@@ -87,12 +87,12 @@
               </svg>
             </div>
           </div>
-        </a>
+        </div>
 
         <!-- Telehealth Section -->
         <h3 class="section-title" style="padding: 0; margin-bottom: var(--space-3);">Telehealth</h3>
 
-        <a href="appointments-book-step2.html?type=telehealth-standard" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+        <div class="card card-interactive appointment-type-card" data-type="telehealth-standard" style="display: block; margin-bottom: var(--space-3);">
           <div class="card-body">
             <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
               <div style="font-size: 1.5rem;">📹</div>
@@ -106,9 +106,9 @@
               </svg>
             </div>
           </div>
-        </a>
+        </div>
 
-        <a href="appointments-book-step2.html?type=telehealth-long" class="card card-interactive" style="display: block;">
+        <div class="card card-interactive appointment-type-card" data-type="telehealth-long" style="display: block;">
           <div class="card-body">
             <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
               <div style="font-size: 1.5rem;">📹</div>
@@ -122,9 +122,30 @@
               </svg>
             </div>
           </div>
-        </a>
+        </div>
       </div>
     </main>
   </div>
+
+  <script src="../js/appointments.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Clear any previous booking state when starting fresh
+      AppointmentsModule.clearBookingState();
+
+      // Add click handlers to appointment type cards
+      document.querySelectorAll('.appointment-type-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const type = this.dataset.type;
+
+          // Save to booking state
+          AppointmentsModule.updateBookingState({ type: type });
+
+          // Navigate to step 2
+          window.location.href = 'appointments-book-step2.html';
+        });
+      });
+    });
+  </script>
 </body>
 </html>
