@@ -242,7 +242,8 @@
 
         // Add click handlers for checkboxes directly
         document.querySelectorAll('.medication-checkbox:not(:disabled)').forEach(checkbox => {
-          checkbox.addEventListener('change', function(e) {
+          checkbox.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent card click from firing
             const card = checkbox.closest('.medication-card');
             const quantitySelector = card.querySelector('.quantity-selector');
 
