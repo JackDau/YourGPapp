@@ -34,17 +34,8 @@
       </div>
 
       <!-- Upcoming Appointment Card -->
-      <div class="upcoming-appointment">
-        <div class="upcoming-appointment-label">
-          📅 Upcoming Appointment
-        </div>
-        <div class="upcoming-appointment-doctor">Dr. James Wilson</div>
-        <div class="upcoming-appointment-type">Standard Consultation</div>
-        <div class="upcoming-appointment-time">Tomorrow, 9:30 AM</div>
-        <div class="upcoming-appointment-actions">
-          <a href="appointment-detail.html" class="btn">View Details</a>
-          <a href="appointments-book-step3.html" class="btn">Reschedule</a>
-        </div>
+      <div id="upcomingAppointmentContainer">
+        <!-- Dynamically populated by JavaScript -->
       </div>
 
       <!-- Quick Actions -->
@@ -187,6 +178,7 @@
     </div>
   </div>
 
+  <script src="../js/appointments.js"></script>
   <script>
     // Set greeting based on time of day
     function setGreeting() {
@@ -212,8 +204,76 @@
       backdrop.classList.toggle('open');
     }
 
+    // Load upcoming appointment dynamically
+    function loadUpcomingAppointment() {
+      const container = document.getElementById('upcomingAppointmentContainer');
+      const appointments = AppointmentsModule.getAppointments();
+      const now = new Date();
+
+      // Filter for upcoming, non-cancelled appointments
+      const upcoming = appointments
+        .filter(apt => new Date(apt.dateTime) > now && apt.status !== 'cancelled')
+        .sort((a, b) => new Date(a.dateTime) - new Date(b.dateTime));
+
+      if (upcoming.length === 0) {
+        container.innerHTML = `
+          <div class="upcoming-appointment" style="text-align: center;">
+            <div style="font-size: 2rem; margin-bottom: 8px;">📅</div>
+            <p style="color: #6b7280; margin-bottom: 12px;">No upcoming appointments</p>
+            <a href="appointments-book-step1.html" class="btn btn-primary">Book Appointment</a>
+          </div>
+        `;
+        return;
+      }
+
+      const appt = upcoming[0]; // Get next appointment
+      const dateObj = new Date(appt.dateTime);
+
+      // Format relative date
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const apptDate = new Date(dateObj);
+      apptDate.setHours(0, 0, 0, 0);
+      const diffDays = Math.ceil((apptDate - today) / (1000 * 60 * 60 * 24));
+
+      let dateStr;
+      if (diffDays === 0) {
+        dateStr = 'Today';
+      } else if (diffDays === 1) {
+        dateStr = 'Tomorrow';
+      } else {
+        const options = { weekday: 'long', day: 'numeric', month: 'short' };
+        dateStr = dateObj.toLocaleDateString('en-AU', options);
+      }
+
+      // Format time
+      const hour24 = dateObj.getHours();
+      const minutes = dateObj.getMinutes();
+      const period = hour24 >= 12 ? 'PM' : 'AM';
+      const hour12 = hour24 > 12 ? hour24 - 12 : (hour24 === 0 ? 12 : hour24);
+      const timeStr = `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+
+      const icon = appt.mode === 'telehealth' ? '📹' : '📅';
+
+      container.innerHTML = `
+        <div class="upcoming-appointment">
+          <div class="upcoming-appointment-label">
+            ${icon} Upcoming Appointment
+          </div>
+          <div class="upcoming-appointment-doctor">${appt.practitionerName}</div>
+          <div class="upcoming-appointment-type">${appt.typeName}</div>
+          <div class="upcoming-appointment-time">${dateStr}, ${timeStr}</div>
+          <div class="upcoming-appointment-actions">
+            <a href="appointment-detail.html?id=${appt.id}" class="btn">View Details</a>
+            <a href="appointments-book-step3.html" class="btn">Reschedule</a>
+          </div>
+        </div>
+      `;
+    }
+
     // Initialize
     setGreeting();
+    loadUpcomingAppointment();
   </script>
 </body>
 </html>
