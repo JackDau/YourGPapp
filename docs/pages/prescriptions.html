@@ -18,14 +18,14 @@
 
     <!-- Main Content -->
     <main class="main">
-      <!-- Tabs -->
-      <div style="padding: var(--space-4);">
+      <!-- Tabs - hidden for MVP, only showing current medications -->
+      <!-- <div style="padding: var(--space-4);">
         <div class="tabs">
           <button class="tab active">Current</button>
           <button class="tab">Past</button>
           <button class="tab">All</button>
         </div>
-      </div>
+      </div> -->
 
       <!-- Current Medications Section -->
       <div class="section">
@@ -117,7 +117,7 @@
           const isLast = index === medications.length - 1;
 
           return `
-            <a href="prescription-detail.html?id=${med.id}" class="card card-interactive" style="display: block; ${isLast ? '' : 'margin-bottom: var(--space-3);'}">
+            <div class="card" style="display: block; ${isLast ? '' : 'margin-bottom: var(--space-3);'}">
               <div class="card-body">
                 <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
                   <div style="width: 40px; height: 40px; background-color: ${iconBg}; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
@@ -134,12 +134,9 @@
                     </div>
                     <p class="text-small text-muted mt-2">Last dispensed: ${PrescriptionsModule.formatDate(med.lastPrescribed)}</p>
                   </div>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
-                    <polyline points="9 18 15 12 9 6"/>
-                  </svg>
                 </div>
               </div>
-            </a>
+            </div>
           `;
         }).join('');
       }

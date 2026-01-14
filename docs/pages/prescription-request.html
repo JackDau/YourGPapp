@@ -219,16 +219,33 @@
           `;
         }).join('');
 
-        // Add click handlers
+        // Add click handlers for cards
         document.querySelectorAll('.medication-card:not(.disabled)').forEach(card => {
           card.addEventListener('click', function(e) {
-            // Don't toggle if clicking on quantity selector
-            if (e.target.tagName === 'SELECT') return;
+            // Don't toggle if clicking on quantity selector or directly on checkbox
+            if (e.target.tagName === 'SELECT' || e.target.tagName === 'OPTION') return;
+            if (e.target.classList.contains('medication-checkbox')) return;
 
             const checkbox = card.querySelector('.medication-checkbox');
             const quantitySelector = card.querySelector('.quantity-selector');
 
             checkbox.checked = !checkbox.checked;
+            card.classList.toggle('selected', checkbox.checked);
+
+            if (quantitySelector) {
+              quantitySelector.style.display = checkbox.checked ? 'flex' : 'none';
+            }
+
+            updateSelection();
+          });
+        });
+
+        // Add click handlers for checkboxes directly
+        document.querySelectorAll('.medication-checkbox:not(:disabled)').forEach(checkbox => {
+          checkbox.addEventListener('change', function(e) {
+            const card = checkbox.closest('.medication-card');
+            const quantitySelector = card.querySelector('.quantity-selector');
+
             card.classList.toggle('selected', checkbox.checked);
 
             if (quantitySelector) {
