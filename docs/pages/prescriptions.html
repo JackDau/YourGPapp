@@ -33,75 +33,8 @@
           <h2 class="section-title">Current Medications</h2>
         </div>
 
-        <div style="padding: 0 var(--space-4);">
-          <!-- Medication 1 - Normal -->
-          <a href="prescription-detail.html" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 40px; height: 40px; background-color: var(--color-success-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                  💊
-                </div>
-                <div style="flex: 1;">
-                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Metformin 500mg</h3>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Take twice daily with meals</p>
-                  <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
-                    <span class="badge badge-success">4 repeats remaining</span>
-                  </div>
-                  <p class="text-small text-muted mt-2">Last dispensed: 5 Jan 2026</p>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
-
-          <!-- Medication 2 - Low Repeats -->
-          <a href="prescription-detail.html" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 40px; height: 40px; background-color: var(--color-warning-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                  💊
-                </div>
-                <div style="flex: 1;">
-                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Lisinopril 10mg</h3>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Take once daily</p>
-                  <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
-                    <span class="badge badge-warning">2 repeats remaining</span>
-                  </div>
-                  <p class="text-small text-muted mt-2">Last dispensed: 12 Jan 2026</p>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
-
-          <!-- Medication 3 - No Repeats -->
-          <a href="prescription-detail.html" class="card card-interactive" style="display: block;">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 40px; height: 40px; background-color: var(--color-error-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                  💊
-                </div>
-                <div style="flex: 1;">
-                  <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
-                    <h3 style="font-size: var(--font-size-base);">Atorvastatin 20mg</h3>
-                    <span style="color: var(--color-error);">⚠️</span>
-                  </div>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Take once daily at night</p>
-                  <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
-                    <span class="badge badge-error">No repeats remaining</span>
-                  </div>
-                  <p class="text-small text-muted mt-2">Last dispensed: 1 Dec 2025</p>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
+        <div id="medicationsContainer" style="padding: 0 var(--space-4);">
+          <!-- Dynamically populated -->
         </div>
       </div>
 
@@ -168,5 +101,51 @@
       </a>
     </nav>
   </div>
+
+  <script src="../js/prescriptions.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.getElementById('medicationsContainer');
+      const medications = PrescriptionsModule.getMedications();
+
+      function renderMedications() {
+        container.innerHTML = medications.map((med, index) => {
+          const badgeClass = PrescriptionsModule.getRepeatsBadgeClass(med.repeatsRemaining);
+          const iconBg = PrescriptionsModule.getIconBgColor(med.repeatsRemaining);
+          const repeatsText = med.repeatsRemaining === 0 ? 'No repeats remaining' : `${med.repeatsRemaining} repeats remaining`;
+          const showWarning = med.repeatsRemaining === 0;
+          const isLast = index === medications.length - 1;
+
+          return `
+            <a href="prescription-detail.html?id=${med.id}" class="card card-interactive" style="display: block; ${isLast ? '' : 'margin-bottom: var(--space-3);'}">
+              <div class="card-body">
+                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+                  <div style="width: 40px; height: 40px; background-color: ${iconBg}; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                    💊
+                  </div>
+                  <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
+                      <h3 style="font-size: var(--font-size-base);">${med.name}</h3>
+                      ${showWarning ? '<span style="color: var(--color-error);">⚠️</span>' : ''}
+                    </div>
+                    <p class="text-small text-muted" style="margin-bottom: var(--space-2);">${med.directions}</p>
+                    <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+                      <span class="badge ${badgeClass}">${repeatsText}</span>
+                    </div>
+                    <p class="text-small text-muted mt-2">Last dispensed: ${PrescriptionsModule.formatDate(med.lastPrescribed)}</p>
+                  </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
+      }
+
+      renderMedications();
+    });
+  </script>
 </body>
 </html>

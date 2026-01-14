@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Submitted - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .success-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-6) var(--space-4);
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--color-success-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-5);
+      animation: scaleIn 0.3s ease-out;
+    }
+
+    @keyframes scaleIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+    }
+
+    .success-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-2);
+    }
+
+    .success-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--color-gray-600);
+      margin-bottom: var(--space-5);
+    }
+
+    .summary-card {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-4);
+      width: 100%;
+      max-width: 400px;
+      text-align: left;
+      margin-bottom: var(--space-5);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+    }
+
+    .summary-value {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .medications-list {
+      margin-top: var(--space-3);
+    }
+
+    .medication-item {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+      font-size: var(--font-size-sm);
+    }
+
+    .timeframe-notice {
+      background: var(--color-info-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-3) var(--space-4);
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: var(--space-5);
+    }
+
+    .timeframe-notice p {
+      font-size: var(--font-size-sm);
+      color: var(--color-info);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      width: 100%;
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="header-title">Request Submitted</h1>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="success-container">
+        <!-- Success Icon -->
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+
+        <h2 class="success-title">Request Submitted!</h2>
+        <p class="success-subtitle">Your prescription request has been sent to our team.</p>
+
+        <!-- Summary Card -->
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="summary-label">Request ID</span>
+            <span class="summary-value" id="requestId">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Delivery Method</span>
+            <span class="summary-value" id="deliveryMethod">-</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Urgency</span>
+            <span class="summary-value" id="urgency">-</span>
+          </div>
+          <div class="medications-list">
+            <span class="summary-label">Medications</span>
+            <div id="medicationsList">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeframe Notice -->
+        <div class="timeframe-notice">
+          <p id="timeframeText">
+            <span>⏱️</span>
+            <span>Processing time information</span>
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <a href="prescriptions.html" class="btn btn-primary btn-block">View Prescriptions</a>
+          <a href="dashboard.html" class="btn btn-secondary btn-block">Back to Home</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/prescriptions.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the last submitted request
+      const requests = PrescriptionsModule.getRequests();
+      const lastRequestId = sessionStorage.getItem('yourgp_last_request_id');
+
+      if (!lastRequestId) {
+        window.location.href = 'prescriptions.html';
+        return;
+      }
+
+      const request = requests.find(r => r.id === lastRequestId);
+
+      if (!request) {
+        window.location.href = 'prescriptions.html';
+        return;
+      }
+
+      // Clear the stored request ID
+      sessionStorage.removeItem('yourgp_last_request_id');
+
+      // Populate summary
+      document.getElementById('requestId').textContent = request.id.substring(0, 12) + '...';
+      document.getElementById('deliveryMethod').textContent = request.deliveryName;
+      document.getElementById('urgency').textContent = request.urgencyName;
+
+      // Populate medications
+      const medicationsList = document.getElementById('medicationsList');
+      medicationsList.innerHTML = request.medications.map(med => `
+        <div class="medication-item">
+          <span>${med.name}</span>
+          <span>Qty: ${med.quantity}</span>
+        </div>
+      `).join('');
+
+      // Set timeframe text based on urgency
+      const timeframeText = document.getElementById('timeframeText');
+      if (request.urgency === 'urgent') {
+        timeframeText.innerHTML = '<span>⏱️</span><span>We will process your urgent request as soon as possible, usually same day.</span>';
+      } else {
+        timeframeText.innerHTML = '<span>⏱️</span><span>Your request will be processed within 2-3 business days.</span>';
+      }
+    });
+  </script>
+</body>
+</html>

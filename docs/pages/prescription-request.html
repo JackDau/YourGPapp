@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Repeat Script - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .medication-card {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: var(--color-white);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      margin-bottom: var(--space-3);
+      transition: all var(--transition-fast);
+    }
+
+    .medication-card:hover:not(.disabled) {
+      border-color: var(--color-gray-400);
+    }
+
+    .medication-card.selected {
+      border-color: var(--color-primary);
+      background-color: rgba(50, 55, 60, 0.02);
+    }
+
+    .medication-card.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background-color: var(--color-gray-50);
+    }
+
+    .medication-checkbox {
+      width: 24px;
+      height: 24px;
+      margin-top: 2px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .medication-checkbox:disabled {
+      cursor: not-allowed;
+    }
+
+    .medication-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .medication-name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .medication-purpose {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+      margin-bottom: var(--space-2);
+    }
+
+    .medication-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+
+    .medication-last-prescribed {
+      font-size: var(--font-size-xs);
+      color: var(--color-gray-500);
+    }
+
+    .quantity-selector {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--color-gray-200);
+    }
+
+    .quantity-selector label {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+    }
+
+    .quantity-selector select {
+      padding: var(--space-2) var(--space-3);
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      background: var(--color-white);
+      min-width: 80px;
+    }
+
+    .controlled-notice {
+      font-size: var(--font-size-xs);
+      color: var(--color-error);
+      margin-top: var(--space-2);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .bottom-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-top: 1px solid var(--color-gray-200);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="prescriptions.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Request Repeat Script</h1>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" style="padding-bottom: 100px;">
+      <!-- Warning Banner -->
+      <div style="padding: var(--space-4);">
+        <div class="alert alert-warning">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-content">
+            <strong>Important:</strong> Repeat prescriptions for sleeping tablets or strong pain relief cannot be requested via this app. Please book an appointment instead.
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div style="padding: 0 var(--space-4) var(--space-3);">
+        <p class="text-muted">Select the medications you need a repeat prescription for:</p>
+      </div>
+
+      <!-- Medications List -->
+      <div id="medicationsList" style="padding: 0 var(--space-4);">
+        <!-- Dynamically populated -->
+      </div>
+    </main>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-actions">
+      <button id="continueBtn" class="btn btn-primary btn-block" disabled>
+        Continue
+      </button>
+    </div>
+  </div>
+
+  <script src="../js/prescriptions.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const medicationsList = document.getElementById('medicationsList');
+      const continueBtn = document.getElementById('continueBtn');
+      const medications = PrescriptionsModule.getMedications();
+
+      // Clear any previous request state
+      PrescriptionsModule.clearRequestState();
+
+      // Track selected medications
+      let selectedMedications = [];
+
+      // Render medications
+      function renderMedications() {
+        medicationsList.innerHTML = medications.map(med => {
+          const isControlled = med.isControlled;
+          const badgeClass = PrescriptionsModule.getRepeatsBadgeClass(med.repeatsRemaining);
+          const iconBg = PrescriptionsModule.getIconBgColor(med.repeatsRemaining);
+
+          return `
+            <div class="medication-card ${isControlled ? 'disabled' : ''}" data-id="${med.id}">
+              <input type="checkbox"
+                     class="medication-checkbox"
+                     id="med_${med.id}"
+                     value="${med.id}"
+                     ${isControlled ? 'disabled' : ''}>
+              <div class="medication-info">
+                <div class="medication-name">${med.name}</div>
+                <div class="medication-purpose">${med.purpose}</div>
+                <div class="medication-meta">
+                  <span class="badge ${badgeClass}">${med.repeatsRemaining} repeats remaining</span>
+                </div>
+                <div class="medication-last-prescribed">Last prescribed: ${PrescriptionsModule.formatDate(med.lastPrescribed)}</div>
+                ${isControlled ? `
+                  <div class="controlled-notice">
+                    <span>🚫</span>
+                    <span>Not available via app - please book an appointment</span>
+                  </div>
+                ` : `
+                  <div class="quantity-selector" style="display: none;">
+                    <label for="qty_${med.id}">Quantity:</label>
+                    <select id="qty_${med.id}">
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                    </select>
+                  </div>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Add click handlers
+        document.querySelectorAll('.medication-card:not(.disabled)').forEach(card => {
+          card.addEventListener('click', function(e) {
+            // Don't toggle if clicking on quantity selector
+            if (e.target.tagName === 'SELECT') return;
+
+            const checkbox = card.querySelector('.medication-checkbox');
+            const quantitySelector = card.querySelector('.quantity-selector');
+
+            checkbox.checked = !checkbox.checked;
+            card.classList.toggle('selected', checkbox.checked);
+
+            if (quantitySelector) {
+              quantitySelector.style.display = checkbox.checked ? 'flex' : 'none';
+            }
+
+            updateSelection();
+          });
+        });
+
+        // Handle quantity changes
+        document.querySelectorAll('.quantity-selector select').forEach(select => {
+          select.addEventListener('change', updateSelection);
+        });
+      }
+
+      // Update selected medications
+      function updateSelection() {
+        selectedMedications = [];
+
+        document.querySelectorAll('.medication-checkbox:checked').forEach(checkbox => {
+          const medId = checkbox.value;
+          const quantitySelect = document.getElementById(`qty_${medId}`);
+          const quantity = quantitySelect ? parseInt(quantitySelect.value) : 1;
+
+          selectedMedications.push({
+            medicationId: medId,
+            quantity: quantity
+          });
+        });
+
+        // Enable/disable continue button
+        continueBtn.disabled = selectedMedications.length === 0;
+      }
+
+      // Continue button handler
+      continueBtn.addEventListener('click', function() {
+        if (selectedMedications.length === 0) return;
+
+        // Save selection to state
+        PrescriptionsModule.updateRequestState({
+          selectedMedications: selectedMedications
+        });
+
+        // Navigate to confirmation page
+        window.location.href = 'prescription-request-confirm.html';
+      });
+
+      // Initial render
+      renderMedications();
+    });
+  </script>
+</body>
+</html>

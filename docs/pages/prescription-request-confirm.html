@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Request - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .summary-card {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .summary-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-3);
+    }
+
+    .medication-summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .medication-summary:last-child {
+      border-bottom: none;
+    }
+
+    .med-name {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .med-purpose {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+    }
+
+    .med-qty {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+      white-space: nowrap;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .radio-option:hover {
+      border-color: var(--color-gray-400);
+    }
+
+    .radio-option.selected {
+      border-color: var(--color-primary);
+      background-color: rgba(50, 55, 60, 0.02);
+    }
+
+    .radio-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .radio-option-content {
+      flex: 1;
+    }
+
+    .radio-option-icon {
+      font-size: 1.25rem;
+    }
+
+    .radio-option-title {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .radio-option-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+    }
+
+    .form-section {
+      margin-bottom: var(--space-5);
+    }
+
+    .form-section-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-3);
+    }
+
+    .notes-textarea {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      font-family: inherit;
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .notes-textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(50, 55, 60, 0.1);
+    }
+
+    .bottom-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-top: 1px solid var(--color-gray-200);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="prescription-request.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Confirm Request</h1>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" style="padding-bottom: 100px;">
+      <div style="padding: var(--space-4);">
+        <!-- Selected Medications Summary -->
+        <div class="summary-card">
+          <div class="summary-title">Selected Medications</div>
+          <div id="medicationsSummary">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Delivery Preference -->
+        <div class="form-section">
+          <div class="form-section-title">Delivery Preference</div>
+          <div class="radio-group" id="deliveryOptions">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Urgency -->
+        <div class="form-section">
+          <div class="form-section-title">Urgency</div>
+          <div class="radio-group" id="urgencyOptions">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="form-section">
+          <div class="form-section-title">Additional Notes (Optional)</div>
+          <textarea id="notes" class="notes-textarea" placeholder="Any special instructions or notes for the doctor..."></textarea>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-actions">
+      <button id="submitBtn" class="btn btn-primary btn-block">
+        Submit Request
+      </button>
+    </div>
+  </div>
+
+  <script src="../js/prescriptions.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const state = PrescriptionsModule.getRequestState();
+
+      // Check if we have selected medications
+      if (!state.selectedMedications || state.selectedMedications.length === 0) {
+        window.location.href = 'prescription-request.html';
+        return;
+      }
+
+      const medicationsSummary = document.getElementById('medicationsSummary');
+      const deliveryOptions = document.getElementById('deliveryOptions');
+      const urgencyOptions = document.getElementById('urgencyOptions');
+      const notesTextarea = document.getElementById('notes');
+      const submitBtn = document.getElementById('submitBtn');
+
+      let selectedDelivery = 'pickup'; // Default
+      let selectedUrgency = 'routine'; // Default
+
+      // Render medications summary
+      function renderMedicationsSummary() {
+        medicationsSummary.innerHTML = state.selectedMedications.map(sel => {
+          const med = PrescriptionsModule.getMedicationById(sel.medicationId);
+          return `
+            <div class="medication-summary">
+              <div>
+                <div class="med-name">${med.name}</div>
+                <div class="med-purpose">${med.purpose}</div>
+              </div>
+              <div class="med-qty">Qty: ${sel.quantity}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render delivery options
+      function renderDeliveryOptions() {
+        const options = PrescriptionsModule.DELIVERY_OPTIONS;
+        deliveryOptions.innerHTML = Object.values(options).map(opt => `
+          <label class="radio-option ${opt.id === selectedDelivery ? 'selected' : ''}" data-delivery="${opt.id}">
+            <input type="radio" name="delivery" value="${opt.id}" ${opt.id === selectedDelivery ? 'checked' : ''}>
+            <span class="radio-option-icon">${opt.icon}</span>
+            <div class="radio-option-content">
+              <div class="radio-option-title">${opt.name}</div>
+              <div class="radio-option-description">${opt.description}</div>
+            </div>
+          </label>
+        `).join('');
+
+        // Add click handlers
+        deliveryOptions.querySelectorAll('.radio-option').forEach(option => {
+          option.addEventListener('click', function() {
+            selectedDelivery = this.dataset.delivery;
+            deliveryOptions.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input').checked = true;
+          });
+        });
+      }
+
+      // Render urgency options
+      function renderUrgencyOptions() {
+        const options = PrescriptionsModule.URGENCY_OPTIONS;
+        urgencyOptions.innerHTML = Object.values(options).map(opt => `
+          <label class="radio-option ${opt.id === selectedUrgency ? 'selected' : ''}" data-urgency="${opt.id}">
+            <input type="radio" name="urgency" value="${opt.id}" ${opt.id === selectedUrgency ? 'checked' : ''}>
+            <div class="radio-option-content">
+              <div class="radio-option-title">${opt.name}</div>
+              <div class="radio-option-description">${opt.description}</div>
+            </div>
+          </label>
+        `).join('');
+
+        // Add click handlers
+        urgencyOptions.querySelectorAll('.radio-option').forEach(option => {
+          option.addEventListener('click', function() {
+            selectedUrgency = this.dataset.urgency;
+            urgencyOptions.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+            this.querySelector('input').checked = true;
+          });
+        });
+      }
+
+      // Submit handler
+      submitBtn.addEventListener('click', function() {
+        // Update state with selections
+        PrescriptionsModule.updateRequestState({
+          delivery: selectedDelivery,
+          urgency: selectedUrgency,
+          notes: notesTextarea.value.trim()
+        });
+
+        try {
+          // Submit the request
+          const request = PrescriptionsModule.submitRequest();
+
+          // Store the submitted request ID for success page
+          sessionStorage.setItem('yourgp_last_request_id', request.id);
+
+          // Navigate to success page
+          window.location.href = 'prescription-request-success.html';
+        } catch (error) {
+          alert('Failed to submit request: ' + error.message);
+        }
+      });
+
+      // Initial render
+      renderMedicationsSummary();
+      renderDeliveryOptions();
+      renderUrgencyOptions();
+    });
+  </script>
+</body>
+</html>
