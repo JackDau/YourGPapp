@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Referral - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .form-section {
+      margin-bottom: var(--space-5);
+    }
+
+    .form-section-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-3);
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .radio-option:hover {
+      border-color: var(--color-gray-400);
+    }
+
+    .radio-option.selected {
+      border-color: var(--color-primary);
+      background-color: rgba(50, 55, 60, 0.02);
+    }
+
+    .radio-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .radio-option-content {
+      flex: 1;
+    }
+
+    .radio-option-title {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .radio-option-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      font-family: inherit;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(50, 55, 60, 0.1);
+    }
+
+    .form-select {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      background: var(--color-white);
+      cursor: pointer;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(50, 55, 60, 0.1);
+    }
+
+    .bottom-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-top: 1px solid var(--color-gray-200);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="requests.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Request Referral</h1>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" style="padding-bottom: 100px;">
+      <div style="padding: var(--space-4);">
+        <!-- Specialist Type -->
+        <div class="form-section">
+          <div class="form-section-title">Type of Specialist</div>
+          <select id="specialistType" class="form-select">
+            <option value="">Select a specialist type...</option>
+            <option value="cardiologist">Cardiologist</option>
+            <option value="dermatologist">Dermatologist</option>
+            <option value="endocrinologist">Endocrinologist</option>
+            <option value="gastroenterologist">Gastroenterologist</option>
+            <option value="neurologist">Neurologist</option>
+            <option value="ophthalmologist">Ophthalmologist</option>
+            <option value="orthopaedic">Orthopaedic Surgeon</option>
+            <option value="physiotherapist">Physiotherapist</option>
+            <option value="psychiatrist">Psychiatrist</option>
+            <option value="psychologist">Psychologist</option>
+            <option value="radiologist">Radiologist (Imaging)</option>
+            <option value="rheumatologist">Rheumatologist</option>
+            <option value="urologist">Urologist</option>
+            <option value="other">Other (please specify)</option>
+          </select>
+        </div>
+
+        <!-- Other Specialist (shown when "other" is selected) -->
+        <div class="form-section" id="otherSpecialistSection" style="display: none;">
+          <div class="form-section-title">Please Specify</div>
+          <input type="text" id="otherSpecialist" class="form-input" placeholder="Enter specialist type...">
+        </div>
+
+        <!-- Reason for Referral -->
+        <div class="form-section">
+          <div class="form-section-title">Reason for Referral</div>
+          <textarea id="reason" class="form-textarea" placeholder="Please describe why you need this referral..."></textarea>
+        </div>
+
+        <!-- Urgency -->
+        <div class="form-section">
+          <div class="form-section-title">Urgency</div>
+          <div class="radio-group" id="urgencyOptions">
+            <label class="radio-option selected" data-urgency="routine">
+              <input type="radio" name="urgency" value="routine" checked>
+              <div class="radio-option-content">
+                <div class="radio-option-title">Routine</div>
+                <div class="radio-option-description">Standard processing time (2-3 business days)</div>
+              </div>
+            </label>
+            <label class="radio-option" data-urgency="urgent">
+              <input type="radio" name="urgency" value="urgent">
+              <div class="radio-option-content">
+                <div class="radio-option-title">Urgent</div>
+                <div class="radio-option-description">Requires prompt attention</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="form-section">
+          <div class="form-section-title">Additional Notes (Optional)</div>
+          <textarea id="notes" class="form-textarea" placeholder="Any additional information for the doctor..." style="min-height: 80px;"></textarea>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-actions">
+      <button id="submitBtn" class="btn btn-primary btn-block" disabled>
+        Submit Request
+      </button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const specialistType = document.getElementById('specialistType');
+      const otherSpecialistSection = document.getElementById('otherSpecialistSection');
+      const otherSpecialist = document.getElementById('otherSpecialist');
+      const reason = document.getElementById('reason');
+      const submitBtn = document.getElementById('submitBtn');
+      const urgencyOptions = document.getElementById('urgencyOptions');
+
+      let selectedUrgency = 'routine';
+
+      // Show/hide other specialist field
+      specialistType.addEventListener('change', function() {
+        if (this.value === 'other') {
+          otherSpecialistSection.style.display = 'block';
+        } else {
+          otherSpecialistSection.style.display = 'none';
+        }
+        validateForm();
+      });
+
+      // Validate form
+      function validateForm() {
+        const hasSpecialist = specialistType.value && (specialistType.value !== 'other' || otherSpecialist.value.trim());
+        const hasReason = reason.value.trim().length > 0;
+        submitBtn.disabled = !(hasSpecialist && hasReason);
+      }
+
+      // Listen for input changes
+      reason.addEventListener('input', validateForm);
+      otherSpecialist.addEventListener('input', validateForm);
+
+      // Urgency selection
+      urgencyOptions.querySelectorAll('.radio-option').forEach(option => {
+        option.addEventListener('click', function() {
+          selectedUrgency = this.dataset.urgency;
+          urgencyOptions.querySelectorAll('.radio-option').forEach(o => o.classList.remove('selected'));
+          this.classList.add('selected');
+          this.querySelector('input').checked = true;
+        });
+      });
+
+      // Submit handler
+      submitBtn.addEventListener('click', function() {
+        const specialist = specialistType.value === 'other' ? otherSpecialist.value.trim() : specialistType.options[specialistType.selectedIndex].text;
+
+        // In production, this would send to an API
+        const request = {
+          id: 'ref_' + Date.now(),
+          specialist: specialist,
+          reason: reason.value.trim(),
+          urgency: selectedUrgency,
+          notes: document.getElementById('notes').value.trim(),
+          submittedAt: new Date().toISOString(),
+          status: 'pending'
+        };
+
+        // Store in localStorage for demo
+        const requests = JSON.parse(localStorage.getItem('yourgp_referral_requests') || '[]');
+        requests.push(request);
+        localStorage.setItem('yourgp_referral_requests', JSON.stringify(requests));
+
+        // Navigate to success page
+        sessionStorage.setItem('yourgp_last_referral_id', request.id);
+        window.location.href = 'referral-request-success.html';
+      });
+    });
+  </script>
+</body>
+</html>
