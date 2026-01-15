@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Referral Details - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .referral-header {
+      background: var(--color-white);
+      padding: var(--space-5) var(--space-4);
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .referral-type {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .referral-type-icon {
+      width: 48px;
+      height: 48px;
+      background-color: #f3e8ff;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .referral-type-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .referral-status {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-2) var(--space-3);
+      background-color: var(--color-success-light);
+      color: var(--color-success);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .referral-status.expiring {
+      background-color: var(--color-warning-light);
+      color: #92400e;
+    }
+
+    .detail-section {
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .detail-section-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-3);
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+    }
+
+    .detail-label {
+      color: var(--color-gray-600);
+      font-size: var(--font-size-sm);
+    }
+
+    .detail-value {
+      font-weight: var(--font-weight-medium);
+      font-size: var(--font-size-sm);
+      text-align: right;
+    }
+
+    .referral-letter {
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-md);
+      padding: var(--space-4);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      font-family: inherit;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: var(--color-white);
+    }
+
+    .action-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-4);
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .action-btn:hover {
+      background: var(--color-gray-100);
+      border-color: var(--color-gray-300);
+    }
+
+    .action-btn-icon {
+      font-size: 1.5rem;
+    }
+
+    .action-btn-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+    }
+
+    /* Print styles */
+    @media print {
+      .header, .bottom-nav, .action-buttons {
+        display: none !important;
+      }
+      .main {
+        padding: 0 !important;
+      }
+      .referral-letter {
+        border: none;
+        background: white;
+      }
+    }
+
+    /* Email Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: var(--space-4);
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 400px;
+      padding: var(--space-5);
+    }
+
+    .modal-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-4);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="referrals.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Referral Details</h1>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main" id="mainContent">
+      <!-- Dynamically populated -->
+    </main>
+
+    <!-- Email Modal -->
+    <div class="modal-overlay" id="emailModal">
+      <div class="modal-content">
+        <h2 class="modal-title">Email Referral</h2>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="emailInput" class="form-input" placeholder="Enter email address">
+        </div>
+        <div class="modal-buttons">
+          <button class="btn btn-secondary" style="flex: 1;" onclick="closeEmailModal()">Cancel</button>
+          <button class="btn btn-primary" style="flex: 1;" onclick="sendEmail()">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Home</span>
+      </a>
+      <a href="appointments.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Appointments</span>
+      </a>
+      <a href="requests.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Requests</span>
+      </a>
+      <a href="#" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="19" cy="12" r="1"/>
+            <circle cx="5" cy="12" r="1"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">More</span>
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    // Dummy referral data
+    const REFERRALS = {
+      'ref_1': {
+        id: 'ref_1',
+        type: 'Cardiology Referral',
+        specialist: 'Dr. Robert Kim',
+        clinic: 'Canberra Heart Clinic',
+        address: '45 Northbourne Ave, Canberra ACT 2601',
+        phone: '(02) 6123 7890',
+        issuedDate: '8 Jan 2026',
+        validUntil: '8 Jan 2027',
+        status: 'active',
+        referringDoctor: 'Dr. James Wilson',
+        reason: 'Chest pain on exertion, family history of heart disease',
+        letterContent: `Dear Dr. Kim,
+
+Re: Sarah Johnson (DOB: 15/03/1985)
+    Medicare No: 2345 67890 1
+
+Thank you for seeing this 40-year-old patient who presents with a 3-month history of chest discomfort on exertion.
+
+History:
+- Intermittent chest tightness during moderate exercise
+- Family history: Father had MI at age 55
+- Non-smoker, occasional alcohol
+- BMI 26, BP 135/85
+
+Current Medications:
+- Metformin 500mg BD
+- Lisinopril 10mg daily
+
+Investigations:
+- ECG: Normal sinus rhythm
+- Lipid panel: Total cholesterol 5.8, LDL 3.5
+
+I would be grateful for your assessment and recommendations regarding cardiac risk stratification and further investigations.
+
+Kind regards,
+Dr. James Wilson
+Your GP Medical Centre
+123 Example Street, Canberra ACT 2600
+Ph: (02) 6123 4567`
+      },
+      'ref_2': {
+        id: 'ref_2',
+        type: 'Dermatology Referral',
+        specialist: 'Dr. Lisa Wang',
+        clinic: 'Skin Health Canberra',
+        address: '78 London Circuit, Canberra ACT 2601',
+        phone: '(02) 6234 5678',
+        issuedDate: '20 Dec 2025',
+        validUntil: '20 Dec 2026',
+        status: 'active',
+        referringDoctor: 'Dr. James Wilson',
+        reason: 'Suspicious mole requiring dermoscopy',
+        letterContent: `Dear Dr. Wang,
+
+Re: Sarah Johnson (DOB: 15/03/1985)
+    Medicare No: 2345 67890 1
+
+I would appreciate your opinion on this patient who has a concerning pigmented lesion on her upper back.
+
+Clinical Findings:
+- 8mm irregular pigmented lesion on right upper back
+- Asymmetric borders, variegated colour
+- Patient reports recent change in size
+- No previous history of skin cancer
+- Skin type II, history of sunburn in youth
+
+Please assess and manage as appropriate.
+
+Kind regards,
+Dr. James Wilson
+Your GP Medical Centre`
+      },
+      'ref_3': {
+        id: 'ref_3',
+        type: 'Physiotherapy Referral',
+        specialist: 'Allied Health Provider',
+        clinic: 'EPC Plan - Any Accredited Physiotherapist',
+        address: 'Various locations',
+        phone: 'N/A',
+        issuedDate: '15 Sep 2025',
+        validUntil: '15 Mar 2026',
+        status: 'active',
+        referringDoctor: 'Dr. James Wilson',
+        reason: 'Chronic lower back pain management',
+        sessionsRemaining: 3,
+        sessionsTotal: 5,
+        letterContent: `ENHANCED PRIMARY CARE PLAN
+Allied Health Referral - Physiotherapy
+
+Patient: Sarah Johnson (DOB: 15/03/1985)
+Medicare No: 2345 67890 1
+
+Diagnosis: Chronic mechanical lower back pain
+
+Treatment Goals:
+1. Pain reduction and improved function
+2. Core strengthening exercises
+3. Postural correction
+4. Education on self-management
+
+Sessions Approved: 5 sessions
+Sessions Remaining: 3 sessions
+
+Please provide treatment as per the GP Management Plan.
+
+Dr. James Wilson
+Your GP Medical Centre`
+      },
+      'ref_4': {
+        id: 'ref_4',
+        type: 'Orthopaedic Referral',
+        specialist: 'Dr. Andrew Smith',
+        clinic: 'Canberra Orthopaedic Centre',
+        address: '12 Moore Street, Canberra ACT 2601',
+        phone: '(02) 6345 6789',
+        issuedDate: '2 Feb 2025',
+        validUntil: '29 Jan 2026',
+        status: 'expiring',
+        referringDoctor: 'Dr. James Wilson',
+        reason: 'Right knee pain, possible meniscal tear',
+        letterContent: `Dear Dr. Smith,
+
+Re: Sarah Johnson (DOB: 15/03/1985)
+    Medicare No: 2345 67890 1
+
+Thank you for seeing this patient with persistent right knee pain following a twisting injury 6 weeks ago.
+
+History:
+- Twisted right knee stepping off curb
+- Immediate swelling, now resolved
+- Persistent medial joint line pain
+- Intermittent locking sensation
+- Unable to fully squat
+
+Examination:
+- Positive McMurray's test
+- Tender over medial joint line
+- No instability
+- ROM limited by pain
+
+X-ray: No bony abnormality
+
+I suspect a medial meniscal tear and would appreciate your assessment regarding the need for MRI or arthroscopy.
+
+Kind regards,
+Dr. James Wilson
+Your GP Medical Centre`
+      }
+    };
+
+    // Get referral ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralId = urlParams.get('id');
+
+    // Load referral details
+    function loadReferral() {
+      const mainContent = document.getElementById('mainContent');
+      const referral = REFERRALS[referralId];
+
+      if (!referral) {
+        mainContent.innerHTML = `
+          <div style="padding: var(--space-6); text-align: center;">
+            <p class="text-muted">Referral not found</p>
+            <a href="referrals.html" class="btn btn-primary mt-4">Back to Referrals</a>
+          </div>
+        `;
+        return;
+      }
+
+      const statusClass = referral.status === 'expiring' ? 'expiring' : '';
+      const statusText = referral.status === 'expiring' ? 'Expiring Soon' : 'Active';
+
+      mainContent.innerHTML = `
+        <!-- Referral Header -->
+        <div class="referral-header">
+          <div class="referral-type">
+            <div class="referral-type-icon">📄</div>
+            <div>
+              <div class="referral-type-title">${referral.type}</div>
+              <div class="referral-status ${statusClass}">${statusText}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Specialist Details -->
+        <div class="detail-section">
+          <div class="detail-section-title">Specialist Details</div>
+          <div class="detail-row">
+            <span class="detail-label">Specialist</span>
+            <span class="detail-value">${referral.specialist}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Clinic</span>
+            <span class="detail-value">${referral.clinic}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Address</span>
+            <span class="detail-value">${referral.address}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Phone</span>
+            <span class="detail-value">${referral.phone}</span>
+          </div>
+        </div>
+
+        <!-- Referral Details -->
+        <div class="detail-section">
+          <div class="detail-section-title">Referral Details</div>
+          <div class="detail-row">
+            <span class="detail-label">Referring Doctor</span>
+            <span class="detail-value">${referral.referringDoctor}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Reason</span>
+            <span class="detail-value">${referral.reason}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Issued Date</span>
+            <span class="detail-value">${referral.issuedDate}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Valid Until</span>
+            <span class="detail-value">${referral.validUntil}</span>
+          </div>
+          ${referral.sessionsRemaining ? `
+          <div class="detail-row">
+            <span class="detail-label">Sessions</span>
+            <span class="detail-value">${referral.sessionsRemaining} of ${referral.sessionsTotal} remaining</span>
+          </div>
+          ` : ''}
+        </div>
+
+        <!-- Referral Letter -->
+        <div class="detail-section">
+          <div class="detail-section-title">Referral Letter</div>
+          <div class="referral-letter">${referral.letterContent}</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="action-btn" onclick="printReferral()">
+            <span class="action-btn-icon">🖨️</span>
+            <span class="action-btn-label">Print</span>
+          </button>
+          <button class="action-btn" onclick="openEmailModal()">
+            <span class="action-btn-icon">📧</span>
+            <span class="action-btn-label">Email</span>
+          </button>
+        </div>
+      `;
+    }
+
+    // Print referral
+    function printReferral() {
+      window.print();
+    }
+
+    // Email modal functions
+    function openEmailModal() {
+      document.getElementById('emailModal').classList.add('open');
+    }
+
+    function closeEmailModal() {
+      document.getElementById('emailModal').classList.remove('open');
+      document.getElementById('emailInput').value = '';
+    }
+
+    function sendEmail() {
+      const email = document.getElementById('emailInput').value;
+      if (!email) {
+        alert('Please enter an email address');
+        return;
+      }
+
+      // In production, this would send via API
+      alert('Referral sent to ' + email);
+      closeEmailModal();
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('emailModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeEmailModal();
+      }
+    });
+
+    // Initialize
+    loadReferral();
+  </script>
+</body>
+</html>
