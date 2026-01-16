@@ -3,39 +3,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prescriptions - Your GP</title>
+  <title>Manage Prescriptions - Your GP</title>
   <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .request-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-5);
+    }
+
+    .request-banner-content {
+      flex: 1;
+    }
+
+    .request-banner-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .request-banner-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .request-banner-icon {
+      width: 48px;
+      height: 48px;
+      background-color: #d1fae5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .request-banner-icon svg {
+      width: 24px;
+      height: 24px;
+      color: #059669;
+    }
+
+    .section-header {
+      margin-bottom: var(--space-4);
+    }
+
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-1);
+    }
+
+    .section-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .medication-list {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .medication-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-gray-100);
+      cursor: pointer;
+      transition: background var(--transition-fast);
+    }
+
+    .medication-row:last-child {
+      border-bottom: none;
+    }
+
+    .medication-row:hover:not(.disabled) {
+      background: var(--color-gray-50);
+    }
+
+    .medication-row.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .medication-info {
+      flex: 1;
+    }
+
+    .medication-name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      margin-bottom: 2px;
+    }
+
+    .medication-dose {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .medication-note {
+      font-size: var(--font-size-xs);
+      color: var(--color-gray-400);
+      font-style: italic;
+      margin-top: var(--space-1);
+    }
+
+    .medication-checkbox {
+      width: 22px;
+      height: 22px;
+      accent-color: #0d9488;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .medication-checkbox:disabled {
+      cursor: not-allowed;
+    }
+
+    .bottom-actions {
+      position: fixed;
+      bottom: 56px;
+      left: 0;
+      right: 0;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-top: 1px solid var(--color-gray-200);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+    }
+
+    .btn-teal {
+      background-color: #0d9488;
+      color: white;
+      border: none;
+    }
+
+    .btn-teal:hover:not(:disabled) {
+      background-color: #0f766e;
+    }
+
+    .btn-teal:disabled {
+      background-color: #99f6e4;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
   <div class="app">
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <h1 class="header-title">Prescriptions</h1>
+        <a href="requests.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Manage Prescriptions</h1>
       </div>
       <div class="header-right"></div>
     </header>
 
     <!-- Main Content -->
-    <main class="main">
-      <!-- Request Repeat Section -->
+    <main class="main" style="padding-bottom: 140px;">
       <div style="padding: var(--space-4);">
-        <a href="prescription-request.html" class="btn btn-primary btn-block">
-          Request Repeat Script
-        </a>
-      </div>
-
-      <!-- Current Medications Section -->
-      <div class="section">
-        <div class="section-header">
-          <h2 class="section-title">Current Medications</h2>
+        <!-- Request New Prescription Banner -->
+        <div class="request-banner">
+          <div class="request-banner-content">
+            <div class="request-banner-title">Request New Prescription</div>
+            <div class="request-banner-subtitle">Replies within 3 business days</div>
+          </div>
+          <div class="request-banner-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <path d="M9 10h6"/>
+              <path d="M12 7v6"/>
+            </svg>
+          </div>
         </div>
 
-        <div id="medicationsContainer" style="padding: 0 var(--space-4);">
+        <!-- Current Prescriptions Section -->
+        <div class="section-header">
+          <h2 class="section-title">Current Prescriptions</h2>
+          <p class="section-subtitle">Out of refills? Select prescriptions you'd like to renew below</p>
+        </div>
+
+        <!-- Medications List -->
+        <div class="medication-list" id="medicationsList">
           <!-- Dynamically populated -->
         </div>
       </div>
     </main>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-actions">
+      <button id="renewBtn" class="btn btn-teal btn-block" disabled>
+        Renew Prescription
+      </button>
+    </div>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
@@ -59,7 +230,7 @@
         </span>
         <span class="nav-item-label">Appointments</span>
       </a>
-      <a href="requests.html" class="nav-item">
+      <a href="requests.html" class="nav-item active">
         <span class="nav-item-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -86,42 +257,100 @@
   <script src="../js/prescriptions.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      const container = document.getElementById('medicationsContainer');
+      const medicationsList = document.getElementById('medicationsList');
+      const renewBtn = document.getElementById('renewBtn');
       const medications = PrescriptionsModule.getMedications();
 
+      let selectedMedications = [];
+
+      // Parse medication name to get drug name and dosage form
+      function parseMedicationName(name) {
+        // Examples: "Metformin 500mg" -> { name: "Metformin", dose: "500mg tabs" }
+        // "Panadeine Forte" -> { name: "Panadeine Forte", dose: "" }
+        const parts = name.split(' ');
+        if (parts.length >= 2 && /\d+mg/.test(parts[parts.length - 1])) {
+          const drugName = parts.slice(0, -1).join(' ');
+          const dose = parts[parts.length - 1] + ' tabs';
+          return { drugName, dose };
+        }
+        return { drugName: name, dose: '' };
+      }
+
+      // Render medications
       function renderMedications() {
-        container.innerHTML = medications.map((med, index) => {
-          const badgeClass = PrescriptionsModule.getRepeatsBadgeClass(med.repeatsRemaining);
-          const iconBg = PrescriptionsModule.getIconBgColor(med.repeatsRemaining);
-          const repeatsText = med.repeatsRemaining === 0 ? 'No repeats remaining' : `${med.repeatsRemaining} repeats remaining`;
-          const showWarning = med.repeatsRemaining === 0;
-          const isLast = index === medications.length - 1;
+        medicationsList.innerHTML = medications.map(med => {
+          const { drugName, dose } = parseMedicationName(med.name);
+          const isDisabled = med.isControlled;
+          const disabledClass = isDisabled ? 'disabled' : '';
+          const note = isDisabled ? '<div class="medication-note">Requires appointment</div>' : '';
 
           return `
-            <div class="card" style="display: block; ${isLast ? '' : 'margin-bottom: var(--space-3);'}">
-              <div class="card-body">
-                <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                  <div style="width: 40px; height: 40px; background-color: ${iconBg}; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                    💊
-                  </div>
-                  <div style="flex: 1;">
-                    <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
-                      <h3 style="font-size: var(--font-size-base);">${med.name}</h3>
-                      ${showWarning ? '<span style="color: var(--color-error);">⚠️</span>' : ''}
-                    </div>
-                    <p class="text-small text-muted" style="margin-bottom: var(--space-2);">${med.directions}</p>
-                    <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
-                      <span class="badge ${badgeClass}">${repeatsText}</span>
-                    </div>
-                    <p class="text-small text-muted mt-2">Last dispensed: ${PrescriptionsModule.formatDate(med.lastPrescribed)}</p>
-                  </div>
-                </div>
+            <div class="medication-row ${disabledClass}" data-med-id="${med.id}">
+              <div class="medication-info">
+                <div class="medication-name">${drugName}</div>
+                <div class="medication-dose">${dose || med.directions}</div>
+                ${note}
               </div>
+              <input type="checkbox" class="medication-checkbox" data-med-id="${med.id}" ${isDisabled ? 'disabled' : ''}>
             </div>
           `;
         }).join('');
+
+        // Add click handlers
+        attachEventHandlers();
       }
 
+      // Attach event handlers
+      function attachEventHandlers() {
+        // Row click handler
+        document.querySelectorAll('.medication-row:not(.disabled)').forEach(row => {
+          row.addEventListener('click', function(e) {
+            if (e.target.type === 'checkbox') return; // Let checkbox handle its own click
+
+            const checkbox = this.querySelector('.medication-checkbox');
+            checkbox.checked = !checkbox.checked;
+            updateSelection();
+          });
+        });
+
+        // Checkbox click handler
+        document.querySelectorAll('.medication-checkbox:not(:disabled)').forEach(checkbox => {
+          checkbox.addEventListener('click', function(e) {
+            e.stopPropagation();
+            updateSelection();
+          });
+        });
+      }
+
+      // Update selection state
+      function updateSelection() {
+        selectedMedications = [];
+
+        document.querySelectorAll('.medication-checkbox:checked').forEach(checkbox => {
+          selectedMedications.push({
+            medicationId: checkbox.dataset.medId,
+            quantity: 1
+          });
+        });
+
+        // Enable/disable renew button
+        renewBtn.disabled = selectedMedications.length === 0;
+      }
+
+      // Renew button click
+      renewBtn.addEventListener('click', function() {
+        if (selectedMedications.length === 0) return;
+
+        // Store selection in session storage for confirmation page
+        PrescriptionsModule.updateRequestState({
+          selectedMedications: selectedMedications
+        });
+
+        // Navigate to confirmation page
+        window.location.href = 'prescription-request-confirm.html';
+      });
+
+      // Initialize
       renderMedications();
     });
   </script>
