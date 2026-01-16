@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Summary - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .summary-header {
+      background: linear-gradient(135deg, var(--color-primary) 0%, #4a5568 100%);
+      color: var(--color-white);
+      padding: var(--space-5) var(--space-4);
+      margin: calc(-1 * var(--space-4));
+      margin-bottom: var(--space-4);
+    }
+
+    .patient-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .patient-avatar {
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .patient-name {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-1);
+    }
+
+    .patient-details {
+      font-size: var(--font-size-sm);
+      opacity: 0.9;
+    }
+
+    .summary-section {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-4);
+      overflow: hidden;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .section-title-icon {
+      font-size: 1.25rem;
+    }
+
+    .section-count {
+      background: var(--color-gray-100);
+      color: var(--color-gray-600);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .section-content {
+      padding: var(--space-4);
+    }
+
+    .item-card {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: var(--color-gray-50);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-2);
+    }
+
+    .item-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .item-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .item-icon.condition { background-color: #fee2e2; }
+    .item-icon.allergy { background-color: #fef3c7; }
+    .item-icon.medication { background-color: #dbeafe; }
+    .item-icon.immunisation { background-color: #dcfce7; }
+    .item-icon.test { background-color: #f3e8ff; }
+
+    .item-content {
+      flex: 1;
+    }
+
+    .item-title {
+      font-weight: var(--font-weight-medium);
+      margin-bottom: 2px;
+    }
+
+    .item-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+    }
+
+    .item-meta {
+      font-size: var(--font-size-xs);
+      color: var(--color-gray-500);
+      margin-top: var(--space-1);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+
+    .status-active {
+      background-color: var(--color-success-light);
+      color: var(--color-success);
+    }
+
+    .status-controlled {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-severe {
+      background-color: #fee2e2;
+      color: var(--color-error);
+    }
+
+    .status-mild {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-4);
+      color: var(--color-gray-500);
+    }
+
+    .print-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .print-btn:hover {
+      background: var(--color-gray-50);
+      border-color: var(--color-gray-400);
+    }
+
+    @media print {
+      .header, .bottom-nav, .print-btn {
+        display: none !important;
+      }
+      .main {
+        padding: 0 !important;
+      }
+      .summary-section {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid var(--color-gray-200);
+      }
+    }
+
+    .last-updated {
+      text-align: center;
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+      padding: var(--space-2) 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="more.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Health Summary</h1>
+      </div>
+      <div class="header-right">
+        <button class="print-btn" onclick="window.print()">
+          <span>🖨️</span>
+          <span>Print</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div style="padding: var(--space-4);">
+        <!-- Patient Header -->
+        <div class="summary-header">
+          <div class="patient-info">
+            <div class="patient-avatar">SJ</div>
+            <div>
+              <div class="patient-name">Sarah Johnson</div>
+              <div class="patient-details">
+                DOB: 15 March 1985 (40 years old)<br>
+                Medicare: 2345 6789 0 1<br>
+                UR: YG-2024-001234
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Conditions -->
+        <div class="summary-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-title-icon">🩺</span>
+              <span>Active Conditions</span>
+            </div>
+            <span class="section-count">3</span>
+          </div>
+          <div class="section-content">
+            <div class="item-card">
+              <div class="item-icon condition">❤️</div>
+              <div class="item-content">
+                <div class="item-title">Essential Hypertension</div>
+                <div class="item-subtitle">
+                  <span class="status-badge status-controlled">Controlled</span>
+                </div>
+                <div class="item-meta">Diagnosed: 12 Mar 2020 | Dr. James Wilson</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon condition">🩸</div>
+              <div class="item-content">
+                <div class="item-title">Type 2 Diabetes Mellitus</div>
+                <div class="item-subtitle">
+                  <span class="status-badge status-controlled">Well Controlled</span>
+                </div>
+                <div class="item-meta">Diagnosed: 5 Jun 2019 | Dr. James Wilson</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon condition">😰</div>
+              <div class="item-content">
+                <div class="item-title">Generalised Anxiety Disorder</div>
+                <div class="item-subtitle">
+                  <span class="status-badge status-active">Active</span>
+                </div>
+                <div class="item-meta">Diagnosed: 18 Sep 2022 | Dr. Sarah Chen</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Allergies & Adverse Reactions -->
+        <div class="summary-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-title-icon">⚠️</span>
+              <span>Allergies & Adverse Reactions</span>
+            </div>
+            <span class="section-count">2</span>
+          </div>
+          <div class="section-content">
+            <div class="item-card">
+              <div class="item-icon allergy">💊</div>
+              <div class="item-content">
+                <div class="item-title">Penicillin</div>
+                <div class="item-subtitle">
+                  <span class="status-badge status-severe">Severe - Anaphylaxis</span>
+                </div>
+                <div class="item-meta">Rash, throat swelling, difficulty breathing | Recorded: 2010</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon allergy">🦐</div>
+              <div class="item-content">
+                <div class="item-title">Shellfish</div>
+                <div class="item-subtitle">
+                  <span class="status-badge status-mild">Mild - Food Allergy</span>
+                </div>
+                <div class="item-meta">Hives, mild swelling | Recorded: 2015</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Current Medications -->
+        <div class="summary-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-title-icon">💊</span>
+              <span>Current Medications</span>
+            </div>
+            <span class="section-count">4</span>
+          </div>
+          <div class="section-content">
+            <div class="item-card">
+              <div class="item-icon medication">💧</div>
+              <div class="item-content">
+                <div class="item-title">Metformin 500mg</div>
+                <div class="item-subtitle">1 tablet twice daily with meals</div>
+                <div class="item-meta">For: Type 2 Diabetes | Prescriber: Dr. Wilson</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon medication">❤️</div>
+              <div class="item-content">
+                <div class="item-title">Lisinopril 10mg</div>
+                <div class="item-subtitle">1 tablet once daily in the morning</div>
+                <div class="item-meta">For: Hypertension | Prescriber: Dr. Wilson</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon medication">📊</div>
+              <div class="item-content">
+                <div class="item-title">Atorvastatin 20mg</div>
+                <div class="item-subtitle">1 tablet once daily at night</div>
+                <div class="item-meta">For: Cholesterol | Prescriber: Dr. Wilson</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon medication">🧠</div>
+              <div class="item-content">
+                <div class="item-title">Escitalopram 10mg</div>
+                <div class="item-subtitle">1 tablet once daily in the morning</div>
+                <div class="item-meta">For: Anxiety | Prescriber: Dr. Chen</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Immunisations -->
+        <div class="summary-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-title-icon">💉</span>
+              <span>Recent Immunisations</span>
+            </div>
+            <span class="section-count">3</span>
+          </div>
+          <div class="section-content">
+            <div class="item-card">
+              <div class="item-icon immunisation">✅</div>
+              <div class="item-content">
+                <div class="item-title">COVID-19 Vaccine (Pfizer)</div>
+                <div class="item-subtitle">Booster dose</div>
+                <div class="item-meta">Administered: 15 Nov 2025 | Batch: FN1234</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon immunisation">✅</div>
+              <div class="item-content">
+                <div class="item-title">Influenza Vaccine 2025</div>
+                <div class="item-subtitle">Quadrivalent</div>
+                <div class="item-meta">Administered: 12 Apr 2025 | Batch: FL2025A</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon immunisation">✅</div>
+              <div class="item-content">
+                <div class="item-title">Tetanus/Diphtheria/Pertussis</div>
+                <div class="item-subtitle">Boostrix</div>
+                <div class="item-meta">Administered: 8 Feb 2023 | Batch: TD5678</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Test Results -->
+        <div class="summary-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-title-icon">🔬</span>
+              <span>Recent Test Results</span>
+            </div>
+            <a href="test-results.html" style="font-size: var(--font-size-sm); color: var(--color-primary);">View All</a>
+          </div>
+          <div class="section-content">
+            <div class="item-card">
+              <div class="item-icon test">📋</div>
+              <div class="item-content">
+                <div class="item-title">HbA1c</div>
+                <div class="item-subtitle">6.8% (within target range)</div>
+                <div class="item-meta">8 Jan 2026 | Canberra Pathology</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon test">📋</div>
+              <div class="item-content">
+                <div class="item-title">Lipid Panel</div>
+                <div class="item-subtitle">Total Cholesterol: 4.8 mmol/L</div>
+                <div class="item-meta">8 Jan 2026 | Canberra Pathology</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon test">📋</div>
+              <div class="item-content">
+                <div class="item-title">Full Blood Count</div>
+                <div class="item-subtitle">All parameters within normal limits</div>
+                <div class="item-meta">8 Jan 2026 | Canberra Pathology</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Past Medical History -->
+        <div class="summary-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-title-icon">📖</span>
+              <span>Past Medical History</span>
+            </div>
+            <span class="section-count">2</span>
+          </div>
+          <div class="section-content">
+            <div class="item-card">
+              <div class="item-icon condition">🏥</div>
+              <div class="item-content">
+                <div class="item-title">Appendectomy</div>
+                <div class="item-subtitle">Laparoscopic procedure, uncomplicated</div>
+                <div class="item-meta">2008 | Canberra Hospital</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon condition">🦴</div>
+              <div class="item-content">
+                <div class="item-title">Right Ankle Fracture</div>
+                <div class="item-subtitle">Weber B, managed conservatively</div>
+                <div class="item-meta">2016 | Fully resolved</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Family History -->
+        <div class="summary-section">
+          <div class="section-header">
+            <div class="section-title">
+              <span class="section-title-icon">👨‍👩‍👧</span>
+              <span>Family History</span>
+            </div>
+          </div>
+          <div class="section-content">
+            <div class="item-card">
+              <div class="item-icon" style="background-color: #e0e7ff;">👨</div>
+              <div class="item-content">
+                <div class="item-title">Father</div>
+                <div class="item-subtitle">Myocardial infarction (age 55), Type 2 Diabetes</div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-icon" style="background-color: #fce7f3;">👩</div>
+              <div class="item-content">
+                <div class="item-title">Mother</div>
+                <div class="item-subtitle">Hypertension, Osteoarthritis</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Last Updated -->
+        <p class="last-updated">
+          Last updated: 16 January 2026 at 9:30 AM
+        </p>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Home</span>
+      </a>
+      <a href="appointments.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Appointments</span>
+      </a>
+      <a href="requests.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Requests</span>
+      </a>
+      <a href="more.html" class="nav-item active">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="19" cy="12" r="1"/>
+            <circle cx="5" cy="12" r="1"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">More</span>
+      </a>
+    </nav>
+  </div>
+</body>
+</html>
