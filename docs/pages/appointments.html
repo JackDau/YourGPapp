@@ -5,12 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Appointments - Your GP</title>
   <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .request-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-5);
+    }
+
+    .request-banner-content {
+      flex: 1;
+    }
+
+    .request-banner-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .request-banner-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .request-banner-icon {
+      width: 48px;
+      height: 48px;
+      background-color: #d1fae5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .request-banner-icon svg {
+      width: 24px;
+      height: 24px;
+      color: #059669;
+    }
+
+    .section-header {
+      margin-bottom: var(--space-3);
+    }
+
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-1);
+    }
+
+    .section-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+  </style>
 </head>
 <body>
   <div class="app">
     <!-- Header -->
     <header class="header">
       <div class="header-left">
+        <a href="dashboard.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
         <h1 class="header-title">Appointments</h1>
       </div>
       <div class="header-right"></div>
@@ -18,31 +82,41 @@
 
     <!-- Main Content -->
     <main class="main">
-      <!-- Book New Button -->
       <div style="padding: var(--space-4);">
-        <a href="appointments-book-step1.html" class="btn btn-primary btn-block">
-          + Book New Appointment
+        <!-- Book Appointment Banner -->
+        <a href="appointments-book-step1.html" class="request-banner" style="text-decoration: none; color: inherit;">
+          <div class="request-banner-content">
+            <div class="request-banner-title">Book New Appointment</div>
+            <div class="request-banner-subtitle">Schedule your next visit</div>
+          </div>
+          <div class="request-banner-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+              <line x1="12" y1="14" x2="12" y2="18"/>
+              <line x1="10" y1="16" x2="14" y2="16"/>
+            </svg>
+          </div>
         </a>
-      </div>
 
-      <!-- Upcoming Section -->
-      <div class="section">
+        <!-- Upcoming Section -->
         <div class="section-header">
           <h2 class="section-title">Upcoming</h2>
+          <p class="section-subtitle">Your scheduled appointments</p>
         </div>
 
-        <div id="upcomingContainer" style="padding: 0 var(--space-4);">
+        <div id="upcomingContainer">
           <!-- Will be populated by JavaScript -->
         </div>
-      </div>
 
-      <!-- Past Appointments Section -->
-      <div class="section">
-        <div class="section-header">
+        <!-- Past Appointments Section -->
+        <div class="section-header" style="margin-top: var(--space-5);">
           <h2 class="section-title">Past Appointments</h2>
         </div>
 
-        <div id="pastContainer" style="margin: 0 var(--space-4);">
+        <div id="pastContainer">
           <!-- Will be populated by JavaScript -->
         </div>
       </div>
@@ -61,9 +135,11 @@
       </a>
       <a href="appointments.html" class="nav-item active">
         <span class="nav-item-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-            <rect x="3" y="4" width="18" height="4" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
           </svg>
         </span>
         <span class="nav-item-label">Appointments</span>

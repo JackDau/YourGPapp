@@ -3,136 +3,203 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Referrals - Your GP</title>
+  <title>Manage Referrals - Your GP</title>
   <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .request-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-5);
+    }
+
+    .request-banner-content {
+      flex: 1;
+    }
+
+    .request-banner-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .request-banner-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .request-banner-icon {
+      width: 48px;
+      height: 48px;
+      background-color: #d1fae5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .request-banner-icon svg {
+      width: 24px;
+      height: 24px;
+      color: #059669;
+    }
+
+    .section-header {
+      margin-bottom: var(--space-3);
+    }
+
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-1);
+    }
+
+    .section-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+  </style>
 </head>
 <body>
   <div class="app">
     <!-- Header -->
     <header class="header">
       <div class="header-left">
-        <h1 class="header-title">Referrals</h1>
+        <a href="requests.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Manage Referrals</h1>
       </div>
       <div class="header-right"></div>
     </header>
 
     <!-- Main Content -->
     <main class="main">
-      <!-- Request Referral Button -->
       <div style="padding: var(--space-4);">
-        <a href="referral-request.html" class="btn btn-primary btn-block">
-          Request Referral
-        </a>
-      </div>
-
-      <div style="padding: 0 var(--space-4);">
-        <p class="text-muted mb-4">Letters and referrals written by Your GP on your behalf.</p>
+        <!-- Request Referral Banner -->
+        <div class="request-banner">
+          <div class="request-banner-content">
+            <div class="request-banner-title">Request Referral</div>
+            <div class="request-banner-subtitle">Replies within 3 business days</div>
+          </div>
+          <div class="request-banner-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              <path d="M9 10h6"/>
+              <path d="M12 7v6"/>
+            </svg>
+          </div>
+        </div>
 
         <!-- Active Referrals Section -->
-        <div class="section">
-          <div class="section-header" style="padding: 0;">
-            <h2 class="section-title">Active Referrals</h2>
-          </div>
-
-          <!-- Referral 1 - Cardiology -->
-          <a href="referral-detail.html?id=ref_1" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 40px; height: 40px; background-color: #f3e8ff; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                  📄
-                </div>
-                <div style="flex: 1;">
-                  <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
-                    <h3 style="font-size: var(--font-size-base);">Cardiology Referral</h3>
-                    <span class="badge badge-info badge-dot"></span>
-                  </div>
-                  <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Robert Kim</p>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Canberra Heart Clinic</p>
-                  <p class="text-small text-muted">Issued: 8 Jan 2026</p>
-                  <p class="text-small" style="color: var(--color-success);">Valid until: 8 Jan 2027</p>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
-
-          <!-- Referral 2 - Dermatology -->
-          <a href="referral-detail.html?id=ref_2" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 40px; height: 40px; background-color: #f3e8ff; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                  📄
-                </div>
-                <div style="flex: 1;">
-                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dermatology Referral</h3>
-                  <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Lisa Wang</p>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Skin Health Canberra</p>
-                  <p class="text-small text-muted">Issued: 20 Dec 2025</p>
-                  <p class="text-small" style="color: var(--color-success);">Valid until: 20 Dec 2026</p>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
-
-          <!-- Referral 3 - Physiotherapy EPC -->
-          <a href="referral-detail.html?id=ref_3" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 40px; height: 40px; background-color: var(--color-success-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                  📄
-                </div>
-                <div style="flex: 1;">
-                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Physiotherapy Referral</h3>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Allied Health (EPC Plan)</p>
-                  <!-- Sessions indicator -->
-                  <div style="display: flex; align-items: center; gap: var(--space-1); margin-bottom: var(--space-2);">
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-gray-300);"></span>
-                    <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-gray-300);"></span>
-                    <span class="text-small text-muted" style="margin-left: var(--space-2);">3 of 5 remaining</span>
-                  </div>
-                  <p class="text-small" style="color: var(--color-success);">Valid until: 15 Mar 2026</p>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
+        <div class="section-header">
+          <h2 class="section-title">Active Referrals</h2>
+          <p class="section-subtitle">Letters and referrals written by Your GP on your behalf</p>
         </div>
+
+        <!-- Referral 1 - Cardiology -->
+        <a href="referral-detail.html?id=ref_1" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+              <div style="width: 40px; height: 40px; background-color: #f3e8ff; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                📄
+              </div>
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
+                  <h3 style="font-size: var(--font-size-base);">Cardiology Referral</h3>
+                  <span class="badge badge-info badge-dot"></span>
+                </div>
+                <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Robert Kim</p>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Canberra Heart Clinic</p>
+                <p class="text-small text-muted">Issued: 8 Jan 2026</p>
+                <p class="text-small" style="color: var(--color-success);">Valid until: 8 Jan 2027</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Referral 2 - Dermatology -->
+        <a href="referral-detail.html?id=ref_2" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+              <div style="width: 40px; height: 40px; background-color: #f3e8ff; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                📄
+              </div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Dermatology Referral</h3>
+                <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Lisa Wang</p>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Skin Health Canberra</p>
+                <p class="text-small text-muted">Issued: 20 Dec 2025</p>
+                <p class="text-small" style="color: var(--color-success);">Valid until: 20 Dec 2026</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
+
+        <!-- Referral 3 - Physiotherapy EPC -->
+        <a href="referral-detail.html?id=ref_3" class="card card-interactive" style="display: block; margin-bottom: var(--space-3);">
+          <div class="card-body">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+              <div style="width: 40px; height: 40px; background-color: var(--color-success-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                📄
+              </div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Physiotherapy Referral</h3>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Allied Health (EPC Plan)</p>
+                <!-- Sessions indicator -->
+                <div style="display: flex; align-items: center; gap: var(--space-1); margin-bottom: var(--space-2);">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-primary);"></span>
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-gray-300);"></span>
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-gray-300);"></span>
+                  <span class="text-small text-muted" style="margin-left: var(--space-2);">3 of 5 remaining</span>
+                </div>
+                <p class="text-small" style="color: var(--color-success);">Valid until: 15 Mar 2026</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
 
         <!-- Expiring Soon Section -->
-        <div class="section mt-5">
-          <div class="section-header" style="padding: 0;">
-            <h2 class="section-title">Expiring Soon</h2>
-          </div>
-
-          <a href="referral-detail.html?id=ref_4" class="card card-interactive" style="display: block; border: 1px solid var(--color-warning);">
-            <div class="card-body">
-              <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
-                <div style="width: 40px; height: 40px; background-color: var(--color-warning-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                  ⚠️
-                </div>
-                <div style="flex: 1;">
-                  <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Orthopaedic Referral</h3>
-                  <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Andrew Smith</p>
-                  <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Canberra Orthopaedic Centre</p>
-                  <p class="text-small" style="color: var(--color-warning); font-weight: var(--font-weight-medium);">Expires in 14 days</p>
-                </div>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6"/>
-                </svg>
-              </div>
-            </div>
-          </a>
+        <div class="section-header" style="margin-top: var(--space-5);">
+          <h2 class="section-title">Expiring Soon</h2>
         </div>
+
+        <a href="referral-detail.html?id=ref_4" class="card card-interactive" style="display: block; border: 1px solid var(--color-warning);">
+          <div class="card-body">
+            <div style="display: flex; align-items: flex-start; gap: var(--space-3);">
+              <div style="width: 40px; height: 40px; background-color: var(--color-warning-light); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                ⚠️
+              </div>
+              <div style="flex: 1;">
+                <h3 style="font-size: var(--font-size-base); margin-bottom: var(--space-1);">Orthopaedic Referral</h3>
+                <p class="text-small" style="margin-bottom: var(--space-1);">Dr. Andrew Smith</p>
+                <p class="text-small text-muted" style="margin-bottom: var(--space-2);">Canberra Orthopaedic Centre</p>
+                <p class="text-small" style="color: var(--color-warning); font-weight: var(--font-weight-medium);">Expires in 14 days</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-gray-400)" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </div>
+          </div>
+        </a>
       </div>
     </main>
 
@@ -158,7 +225,7 @@
         </span>
         <span class="nav-item-label">Appointments</span>
       </a>
-      <a href="requests.html" class="nav-item">
+      <a href="requests.html" class="nav-item active">
         <span class="nav-item-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
