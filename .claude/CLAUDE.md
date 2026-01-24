@@ -123,6 +123,8 @@ YourGPapp/
 3. **Appointments** - View, book (4-step flow), cancel, reschedule
 4. **Prescriptions** - View medications, request repeats (with restrictions)
 5. **Test Results** - Lab results and imaging, filtered by type
+   - Detail views with normal results (Full Blood Count - green indicators)
+   - Abnormal results (Lipid Panel - warning banners, follow-up CTA)
 6. **Referrals** - View referral letters, request new referrals
 7. **Video Consultation** - Complete telehealth flow with check-in, call, payment, and feedback
 
@@ -166,3 +168,10 @@ YourGPapp/
 - **Wireframes**: See `/wireframes/` for detailed feature specifications
 - **Design System**: See `/wireframes/07-navigation-and-design-system.md`
 - **Parent Framework**: See `../.claude/CLAUDE.md` for four-pillar context
+
+## Recent Updates
+
+- Dashboard avatar links to More > Account section (gear icon removed)
+- Bottom navigation uses color-only active indicator (dot removed for readability)
+- Test result detail pages with mock lab data (normal and abnormal examples)
+- Fixed dashboard Recent Activity links to correct pages
