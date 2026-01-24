@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Reminders - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .reminders-header {
+      padding: var(--space-4);
+      padding-bottom: 0;
+    }
+
+    .reminders-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-1);
+    }
+
+    .reminders-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .reminders-list {
+      padding: var(--space-4);
+    }
+
+    .reminder-card {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--space-3);
+      overflow: hidden;
+      transition: all var(--transition-fast);
+    }
+
+    .reminder-card.expanded {
+      box-shadow: var(--shadow-md);
+    }
+
+    .reminder-main {
+      display: flex;
+      align-items: center;
+      padding: var(--space-4);
+      cursor: pointer;
+      gap: var(--space-3);
+    }
+
+    .reminder-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .reminder-icon.overdue {
+      background-color: #fee2e2;
+    }
+
+    .reminder-icon.due-soon {
+      background-color: #fef3c7;
+    }
+
+    .reminder-icon.upcoming {
+      background-color: #d1fae5;
+    }
+
+    .reminder-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reminder-name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      margin-bottom: 2px;
+    }
+
+    .reminder-due {
+      font-size: var(--font-size-sm);
+    }
+
+    .reminder-due.overdue {
+      color: #dc2626;
+      font-weight: var(--font-weight-medium);
+    }
+
+    .reminder-due.due-soon {
+      color: #d97706;
+    }
+
+    .reminder-due.upcoming {
+      color: var(--color-gray-500);
+    }
+
+    .reminder-chevron {
+      color: var(--color-gray-400);
+      transition: transform var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .reminder-card.expanded .reminder-chevron {
+      transform: rotate(180deg);
+    }
+
+    .reminder-actions {
+      display: none;
+      padding: 0 var(--space-4) var(--space-4);
+      border-top: 1px solid var(--color-gray-100);
+      gap: var(--space-2);
+      flex-direction: column;
+    }
+
+    .reminder-card.expanded .reminder-actions {
+      display: flex;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      width: 100%;
+    }
+
+    .action-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .action-btn-primary {
+      background-color: #0d9488;
+      color: white;
+    }
+
+    .action-btn-primary:hover {
+      background-color: #0f766e;
+    }
+
+    .action-btn-secondary {
+      background-color: var(--color-gray-100);
+      color: var(--color-gray-700);
+    }
+
+    .action-btn-secondary:hover {
+      background-color: var(--color-gray-200);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8) var(--space-4);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-4);
+    }
+
+    .empty-state-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+    }
+
+    .empty-state-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    /* Snooze Modal */
+    #snoozeModal .modal-content {
+      padding: var(--space-4);
+    }
+
+    .snooze-header {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-4);
+      text-align: center;
+    }
+
+    .snooze-date-input {
+      width: 100%;
+      padding: var(--space-3);
+      border: 1px solid var(--color-gray-300);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-base);
+      margin-bottom: var(--space-4);
+    }
+
+    .snooze-actions {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .snooze-actions .action-btn {
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="dashboard.html" class="header-back">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Health Reminders</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="reminders-header">
+        <h2 class="reminders-title">Your Reminders</h2>
+        <p class="reminders-subtitle">Preventive health checks recommended by your GP</p>
+      </div>
+
+      <div class="reminders-list" id="remindersList">
+        <!-- Dynamically populated -->
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Home</span>
+      </a>
+      <a href="appointments.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Appointments</span>
+      </a>
+      <a href="requests.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Requests</span>
+      </a>
+      <a href="more.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="19" cy="12" r="1"/>
+            <circle cx="5" cy="12" r="1"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">More</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Snooze Modal -->
+  <div id="snoozeModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="snooze-header">Remind Me Later</div>
+      <input type="date" id="snoozeDate" class="snooze-date-input">
+      <div class="snooze-actions">
+        <button type="button" id="snoozeCancelBtn" class="action-btn action-btn-secondary">Cancel</button>
+        <button type="button" id="snoozeConfirmBtn" class="action-btn action-btn-primary">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done Confirmation Modal -->
+  <div id="doneModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <div class="snooze-header">Mark as Done?</div>
+      <p style="text-align: center; color: var(--color-gray-600); margin-bottom: var(--space-4);">This will remove the reminder from your list.</p>
+      <div class="snooze-actions">
+        <button type="button" id="doneCancelBtn" class="action-btn action-btn-secondary">Cancel</button>
+        <button type="button" id="doneConfirmBtn" class="action-btn action-btn-primary">Yes, Done</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const STORAGE_KEY = 'yourgp_reminders';
+
+      // Mock reminders data
+      const DEFAULT_REMINDERS = [
+        {
+          id: 'rem_1',
+          name: 'Skin Check',
+          icon: '🔬',
+          dueDate: getDaysFromNow(-14), // 2 weeks overdue
+          status: 'active'
+        },
+        {
+          id: 'rem_2',
+          name: 'Flu Vaccination',
+          icon: '💉',
+          dueDate: getDaysFromNow(7), // Due in 1 week
+          status: 'active'
+        },
+        {
+          id: 'rem_3',
+          name: 'Colonoscopy',
+          icon: '🏥',
+          dueDate: getDaysFromNow(21), // Due in 3 weeks
+          status: 'active'
+        },
+        {
+          id: 'rem_4',
+          name: 'Blood Test',
+          icon: '🩸',
+          dueDate: getDaysFromNow(45), // Due in ~6 weeks
+          status: 'active'
+        }
+      ];
+
+      function getDaysFromNow(days) {
+        const date = new Date();
+        date.setDate(date.getDate() + days);
+        return date.toISOString().split('T')[0];
+      }
+
+      // Load reminders from storage or use defaults
+      function loadReminders() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          return JSON.parse(stored);
+        }
+        // Initialize with defaults
+        saveReminders(DEFAULT_REMINDERS);
+        return DEFAULT_REMINDERS;
+      }
+
+      function saveReminders(reminders) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(reminders));
+      }
+
+      // Calculate urgency based on due date
+      function getUrgency(dueDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const due = new Date(dueDate);
+        due.setHours(0, 0, 0, 0);
+
+        const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) {
+          return 'overdue';
+        } else if (diffDays <= 14) {
+          return 'due-soon';
+        } else {
+          return 'upcoming';
+        }
+      }
+
+      // Format due date for display
+      function formatDueDate(dueDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const due = new Date(dueDate);
+        due.setHours(0, 0, 0, 0);
+
+        const diffDays = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) {
+          const absDays = Math.abs(diffDays);
+          if (absDays === 1) return 'Overdue by 1 day';
+          if (absDays < 7) return `Overdue by ${absDays} days`;
+          const weeks = Math.floor(absDays / 7);
+          if (weeks === 1) return 'Overdue by 1 week';
+          return `Overdue by ${weeks} weeks`;
+        } else if (diffDays === 0) {
+          return 'Due today';
+        } else if (diffDays === 1) {
+          return 'Due tomorrow';
+        } else if (diffDays < 7) {
+          return `Due in ${diffDays} days`;
+        } else if (diffDays < 14) {
+          return 'Due in 1 week';
+        } else if (diffDays < 30) {
+          const weeks = Math.floor(diffDays / 7);
+          return `Due in ${weeks} weeks`;
+        } else {
+          const options = { day: 'numeric', month: 'short' };
+          return 'Due ' + due.toLocaleDateString('en-AU', options);
+        }
+      }
+
+      // Render reminders list
+      function renderReminders() {
+        const reminders = loadReminders().filter(r => r.status === 'active');
+        const container = document.getElementById('remindersList');
+
+        if (reminders.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-icon">✅</div>
+              <div class="empty-state-title">All caught up!</div>
+              <div class="empty-state-text">You have no pending health reminders.</div>
+            </div>
+          `;
+          return;
+        }
+
+        // Sort by due date (most urgent first)
+        reminders.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+        container.innerHTML = reminders.map(reminder => {
+          const urgency = getUrgency(reminder.dueDate);
+          const dueText = formatDueDate(reminder.dueDate);
+
+          return `
+            <div class="reminder-card" data-id="${reminder.id}">
+              <div class="reminder-main">
+                <div class="reminder-icon ${urgency}">
+                  ${reminder.icon}
+                </div>
+                <div class="reminder-content">
+                  <div class="reminder-name">${reminder.name}</div>
+                  <div class="reminder-due ${urgency}">${dueText}</div>
+                </div>
+                <svg class="reminder-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </div>
+              <div class="reminder-actions">
+                <button class="action-btn action-btn-primary book-btn" data-id="${reminder.id}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  Book Appointment
+                </button>
+                <button class="action-btn action-btn-secondary snooze-btn" data-id="${reminder.id}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Remind Me Later
+                </button>
+                <button class="action-btn action-btn-secondary done-btn" data-id="${reminder.id}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Mark as Done
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        attachEventHandlers();
+      }
+
+      function attachEventHandlers() {
+        // Toggle expand/collapse
+        document.querySelectorAll('.reminder-main').forEach(el => {
+          el.addEventListener('click', function() {
+            const card = this.closest('.reminder-card');
+            const wasExpanded = card.classList.contains('expanded');
+
+            // Collapse all others
+            document.querySelectorAll('.reminder-card.expanded').forEach(c => {
+              c.classList.remove('expanded');
+            });
+
+            // Toggle this one
+            if (!wasExpanded) {
+              card.classList.add('expanded');
+            }
+          });
+        });
+
+        // Book appointment buttons
+        document.querySelectorAll('.book-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.location.href = 'appointments-book-step1.html';
+          });
+        });
+
+        // Snooze buttons
+        document.querySelectorAll('.snooze-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openSnoozeModal(this.dataset.id);
+          });
+        });
+
+        // Done buttons
+        document.querySelectorAll('.done-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            openDoneModal(this.dataset.id);
+          });
+        });
+      }
+
+      // Snooze modal
+      const snoozeModal = document.getElementById('snoozeModal');
+      const snoozeDate = document.getElementById('snoozeDate');
+      let currentSnoozeId = null;
+
+      function openSnoozeModal(reminderId) {
+        currentSnoozeId = reminderId;
+        // Set min date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        snoozeDate.min = tomorrow.toISOString().split('T')[0];
+        snoozeDate.value = '';
+        snoozeModal.classList.add('open');
+      }
+
+      document.getElementById('snoozeCancelBtn').addEventListener('click', function() {
+        snoozeModal.classList.remove('open');
+        currentSnoozeId = null;
+      });
+
+      document.querySelector('#snoozeModal .modal-overlay').addEventListener('click', function() {
+        snoozeModal.classList.remove('open');
+        currentSnoozeId = null;
+      });
+
+      document.getElementById('snoozeConfirmBtn').addEventListener('click', function() {
+        if (!snoozeDate.value || !currentSnoozeId) return;
+
+        const reminders = loadReminders();
+        const reminder = reminders.find(r => r.id === currentSnoozeId);
+        if (reminder) {
+          reminder.dueDate = snoozeDate.value;
+          saveReminders(reminders);
+          renderReminders();
+        }
+
+        snoozeModal.classList.remove('open');
+        currentSnoozeId = null;
+      });
+
+      // Done modal
+      const doneModal = document.getElementById('doneModal');
+      let currentDoneId = null;
+
+      function openDoneModal(reminderId) {
+        currentDoneId = reminderId;
+        doneModal.classList.add('open');
+      }
+
+      document.getElementById('doneCancelBtn').addEventListener('click', function() {
+        doneModal.classList.remove('open');
+        currentDoneId = null;
+      });
+
+      document.querySelector('#doneModal .modal-overlay').addEventListener('click', function() {
+        doneModal.classList.remove('open');
+        currentDoneId = null;
+      });
+
+      document.getElementById('doneConfirmBtn').addEventListener('click', function() {
+        if (!currentDoneId) return;
+
+        const reminders = loadReminders();
+        const reminder = reminders.find(r => r.id === currentDoneId);
+        if (reminder) {
+          reminder.status = 'completed';
+          saveReminders(reminders);
+          renderReminders();
+        }
+
+        doneModal.classList.remove('open');
+        currentDoneId = null;
+      });
+
+      // Initialize
+      renderReminders();
+    });
+  </script>
+</body>
+</html>
