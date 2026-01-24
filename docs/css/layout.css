@@ -300,20 +300,21 @@
 .modal {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  width: 100%;
+  max-width: 600px;
   z-index: var(--z-modal);
   background-color: var(--color-white);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   max-height: 90vh;
   overflow-y: auto;
-  transform: translateY(100%);
+  transform: translateX(-50%) translateY(100%);
   transition: transform var(--transition-slow);
 }
 
 .modal-backdrop.open + .modal,
 .modal.open {
-  transform: translateY(0);
+  transform: translateX(-50%) translateY(0);
 }
 
 .modal-handle {
