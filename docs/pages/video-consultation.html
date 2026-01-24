@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Consultation - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .video-container {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 120px);
+      padding: var(--space-4);
+    }
+
+    .video-area {
+      flex: 1;
+      background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      position: relative;
+      min-height: 300px;
+      overflow: hidden;
+    }
+
+    /* Animated video placeholder for active call */
+    .video-area.active-call {
+      background: linear-gradient(
+        45deg,
+        #1f2937,
+        #374151,
+        #1f2937,
+        #4b5563
+      );
+      background-size: 400% 400%;
+      animation: video-shimmer 8s ease infinite;
+    }
+
+    @keyframes video-shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Pattern overlay */
+    .video-area::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    /* Pre-check state */
+    .precheck-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+      position: relative;
+      z-index: 1;
+      animation: pulse-check 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-check {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+    }
+
+    .precheck-icon svg {
+      width: 40px;
+      height: 40px;
+      stroke: white;
+    }
+
+    /* Waiting state avatar */
+    .waiting-avatar {
+      width: 120px;
+      height: 120px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      font-weight: var(--font-weight-bold);
+      color: white;
+      margin-bottom: var(--space-4);
+      position: relative;
+      z-index: 1;
+      animation: avatar-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes avatar-pulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+      50% { transform: scale(1.02); box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+    }
+
+    /* Doctor joined transition */
+    .joined-icon {
+      width: 100px;
+      height: 100px;
+      background: var(--color-success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+      position: relative;
+      z-index: 1;
+      animation: pop-in 0.4s ease-out;
+    }
+
+    @keyframes pop-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .joined-icon svg {
+      width: 50px;
+      height: 50px;
+      stroke: white;
+      stroke-width: 3;
+    }
+
+    /* Active call doctor name overlay */
+    .doctor-overlay {
+      position: absolute;
+      bottom: 160px;
+      left: var(--space-4);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      z-index: 2;
+    }
+
+    .doctor-overlay-name {
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+    }
+
+    .doctor-overlay-title {
+      font-size: var(--font-size-xs);
+      opacity: 0.8;
+    }
+
+    /* Call timer */
+    .call-timer {
+      position: absolute;
+      top: var(--space-3);
+      left: var(--space-3);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .call-timer-dot {
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .video-status {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .video-substatus {
+      font-size: var(--font-size-sm);
+      opacity: 0.8;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    /* Self view */
+    .self-view {
+      position: absolute;
+      bottom: var(--space-3);
+      right: var(--space-3);
+      width: 100px;
+      height: 140px;
+      background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+      border-radius: var(--radius-md);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .self-view.active-call {
+      background: linear-gradient(
+        135deg,
+        #4b5563,
+        #6b7280,
+        #4b5563
+      );
+      background-size: 200% 200%;
+      animation: self-shimmer 4s ease infinite;
+    }
+
+    @keyframes self-shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .self-view svg {
+      width: 32px;
+      height: 32px;
+      stroke: rgba(255, 255, 255, 0.5);
+    }
+
+    .self-view-label {
+      font-size: var(--font-size-xs);
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: var(--space-1);
+    }
+
+    .self-view.muted::after {
+      content: '';
+      position: absolute;
+      top: var(--space-2);
+      left: var(--space-2);
+      width: 20px;
+      height: 20px;
+      background: #ef4444;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Appointment info card */
+    .appointment-info {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .appointment-info-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .practitioner-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--color-primary);
+      color: var(--color-white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-base);
+    }
+
+    .practitioner-details {
+      flex: 1;
+    }
+
+    .practitioner-name {
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: 2px;
+    }
+
+    .practitioner-title {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .appointment-meta {
+      display: flex;
+      gap: var(--space-4);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-600);
+    }
+
+    .meta-item svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--color-gray-400);
+    }
+
+    /* Controls bar */
+    .controls-bar {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      margin-top: var(--space-4);
+    }
+
+    .control-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .control-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .control-btn.secondary {
+      background: var(--color-gray-100);
+      color: var(--color-gray-700);
+    }
+
+    .control-btn.secondary:hover {
+      background: var(--color-gray-200);
+    }
+
+    .control-btn.secondary.active {
+      background: #ef4444;
+      color: white;
+    }
+
+    .control-btn.danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .control-btn.danger:hover {
+      background: #b91c1c;
+    }
+
+    .control-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Queue position */
+    .queue-position {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      margin: var(--space-4) 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .queue-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(4px);
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-full);
+    }
+
+    .queue-number {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .queue-label {
+      font-size: var(--font-size-sm);
+      opacity: 0.9;
+    }
+
+    .queue-time {
+      font-size: var(--font-size-sm);
+      opacity: 0.8;
+    }
+
+    /* Waiting tips */
+    .waiting-tips {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(4px);
+      border-radius: var(--radius-md);
+      padding: var(--space-3);
+      margin-top: var(--space-4);
+      max-width: 280px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .waiting-tips-title {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-2);
+      opacity: 0.9;
+    }
+
+    .waiting-tips-text {
+      font-size: var(--font-size-sm);
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    /* Hidden states */
+    .state-hidden {
+      display: none !important;
+    }
+
+    /* Keyboard shortcut hint */
+    .dev-hint {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-xs);
+      z-index: 100;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <a href="appointments.html" class="header-back" id="backBtn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </a>
+        <h1 class="header-title">Virtual Waiting Room</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="video-container">
+        <!-- Video Area -->
+        <div class="video-area" id="videoArea">
+
+          <!-- Call Timer (shown during active call) -->
+          <div class="call-timer state-hidden" id="callTimer">
+            <span class="call-timer-dot"></span>
+            <span id="timerDisplay">00:00</span>
+          </div>
+
+          <!-- State: Pre-check -->
+          <div id="statePrecheck">
+            <div class="precheck-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7"/>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              </svg>
+            </div>
+            <div class="video-status">Checking devices...</div>
+            <div class="video-substatus">Preparing your video call</div>
+          </div>
+
+          <!-- State: Waiting for doctor -->
+          <div id="stateWaiting" class="state-hidden">
+            <div class="waiting-avatar" id="waitingAvatar">DR</div>
+            <div class="video-status">Waiting for <span id="waitingDoctorName">Dr. Smith</span></div>
+            <div class="video-substatus" id="waitingSubstatus">Your doctor will join shortly</div>
+            <div class="queue-position" id="queuePosition">
+              <div class="queue-badge">
+                <span class="queue-number">1</span>
+                <span class="queue-label">in queue</span>
+              </div>
+              <div class="queue-time">Estimated wait: <span id="estimatedWait">2-3 min</span></div>
+            </div>
+            <div class="waiting-tips">
+              <div class="waiting-tips-title">While you wait</div>
+              <div class="waiting-tips-text">Make sure you're in a quiet, well-lit space. Test your microphone and camera using the controls below.</div>
+            </div>
+          </div>
+
+          <!-- State: Doctor joining -->
+          <div id="stateJoining" class="state-hidden">
+            <div class="joined-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <div class="video-status"><span id="joiningDoctorName">Dr. Smith</span> has joined</div>
+            <div class="video-substatus">Your call is starting...</div>
+          </div>
+
+          <!-- State: Active call (empty - uses overlay elements) -->
+          <div id="stateActiveCall" class="state-hidden">
+            <div class="doctor-overlay">
+              <div class="doctor-overlay-name" id="activeDoctorName">Dr. Emily Chen</div>
+              <div class="doctor-overlay-title" id="activeDoctorTitle">General Practitioner</div>
+            </div>
+          </div>
+
+          <!-- Self view -->
+          <div class="self-view" id="selfView">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="self-view-label">You</span>
+          </div>
+        </div>
+
+        <!-- Appointment Info -->
+        <div class="appointment-info" id="appointmentInfo">
+          <div class="appointment-info-header">
+            <div class="practitioner-avatar" id="practAvatar">DR</div>
+            <div class="practitioner-details">
+              <div class="practitioner-name" id="practName">Dr Rebecca Chen</div>
+              <div class="practitioner-title" id="practTitle">General Practitioner</div>
+            </div>
+          </div>
+          <div class="appointment-meta">
+            <div class="meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span id="appointmentDate">Today</span>
+            </div>
+            <div class="meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span id="appointmentTime">2:30 PM</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+          <button type="button" class="control-btn secondary" id="micBtn" title="Toggle microphone">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="micIcon">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
+          <button type="button" class="control-btn secondary" id="videoBtn" title="Toggle camera">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="videoIcon">
+              <polygon points="23 7 16 12 23 17 23 7"/>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
+          </button>
+          <button type="button" class="control-btn danger" id="endBtn" title="End call">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Dev hint for testing -->
+    <div class="dev-hint" id="devHint">Press Ctrl+Shift+D to simulate doctor joining</div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Home</span>
+      </a>
+      <a href="appointments.html" class="nav-item active">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Appointments</span>
+      </a>
+      <a href="requests.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Requests</span>
+      </a>
+      <a href="more.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="19" cy="12" r="1"/>
+            <circle cx="5" cy="12" r="1"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">More</span>
+      </a>
+    </nav>
+  </div>
+
+  <script src="../js/appointments.js"></script>
+  <script>
+    // State machine
+    const STATES = {
+      PRECHECK: 'precheck',
+      WAITING: 'waiting',
+      JOINING: 'joining',
+      ACTIVE: 'active'
+    };
+
+    // Timing constants
+    const PRECHECK_DURATION = 2500;
+    const DOCTOR_JOIN_DELAY = 45000; // 45 seconds
+    const JOINING_TRANSITION = 2000;
+
+    // State
+    let currentState = STATES.PRECHECK;
+    let appointment = null;
+    let practitioner = null;
+    let doctorJoinTimeout = null;
+    let callStartTime = null;
+    let timerInterval = null;
+    let micMuted = false;
+    let videoOff = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get appointment ID from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const appointmentId = urlParams.get('id');
+
+      if (appointmentId) {
+        appointment = AppointmentsModule.getAppointmentById(appointmentId);
+      }
+
+      if (appointment) {
+        // Store practitioner info
+        practitioner = {
+          name: appointment.practitionerName,
+          initials: appointment.practitionerInitials,
+          title: appointment.practitionerTitle,
+          color: appointment.practitionerColor
+        };
+
+        updateAppointmentDisplay();
+        updateDoctorNames();
+
+        // Update back button to go to checkin
+        document.getElementById('backBtn').href = `video-checkin.html?id=${appointmentId}`;
+      } else {
+        // Demo mode - use default practitioner
+        practitioner = {
+          name: 'Dr. Emily Chen',
+          initials: 'EC',
+          title: 'General Practitioner',
+          color: '#0d9488'
+        };
+        updateDoctorNames();
+      }
+
+      // Start the flow
+      startPrecheck();
+
+      // Setup controls
+      setupControls();
+
+      // Setup keyboard shortcut for testing
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+          e.preventDefault();
+          if (currentState === STATES.WAITING) {
+            triggerDoctorJoin();
+          }
+        }
+      });
+    });
+
+    function updateAppointmentDisplay() {
+      if (!appointment) return;
+
+      // Update practitioner info card
+      document.getElementById('practAvatar').textContent = appointment.practitionerInitials;
+      document.getElementById('practAvatar').style.backgroundColor = appointment.practitionerColor;
+      document.getElementById('practName').textContent = appointment.practitionerName;
+      document.getElementById('practTitle').textContent = appointment.practitionerTitle;
+
+      // Format date
+      const dateObj = new Date(appointment.dateTime);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const apptDate = new Date(dateObj);
+      apptDate.setHours(0, 0, 0, 0);
+
+      let dateText;
+      if (apptDate.getTime() === today.getTime()) {
+        dateText = 'Today';
+      } else {
+        const options = { weekday: 'short', day: 'numeric', month: 'short' };
+        dateText = dateObj.toLocaleDateString('en-AU', options);
+      }
+      document.getElementById('appointmentDate').textContent = dateText;
+
+      // Format time
+      const hour24 = dateObj.getHours();
+      const minutes = dateObj.getMinutes();
+      const period = hour24 >= 12 ? 'PM' : 'AM';
+      const hour12 = hour24 > 12 ? hour24 - 12 : (hour24 === 0 ? 12 : hour24);
+      document.getElementById('appointmentTime').textContent =
+        `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
+    }
+
+    function updateDoctorNames() {
+      // Update all doctor name references
+      document.getElementById('waitingAvatar').textContent = practitioner.initials;
+      document.getElementById('waitingAvatar').style.backgroundColor = practitioner.color;
+      document.getElementById('waitingDoctorName').textContent = practitioner.name;
+      document.getElementById('joiningDoctorName').textContent = practitioner.name;
+      document.getElementById('activeDoctorName').textContent = practitioner.name;
+      document.getElementById('activeDoctorTitle').textContent = practitioner.title;
+    }
+
+    function setState(newState) {
+      currentState = newState;
+
+      // Hide all state elements
+      document.getElementById('statePrecheck').classList.add('state-hidden');
+      document.getElementById('stateWaiting').classList.add('state-hidden');
+      document.getElementById('stateJoining').classList.add('state-hidden');
+      document.getElementById('stateActiveCall').classList.add('state-hidden');
+      document.getElementById('callTimer').classList.add('state-hidden');
+
+      // Remove active-call class from video area
+      document.getElementById('videoArea').classList.remove('active-call');
+      document.getElementById('selfView').classList.remove('active-call');
+
+      // Show appropriate state
+      switch (newState) {
+        case STATES.PRECHECK:
+          document.getElementById('statePrecheck').classList.remove('state-hidden');
+          document.getElementById('devHint').style.display = 'none';
+          break;
+
+        case STATES.WAITING:
+          document.getElementById('stateWaiting').classList.remove('state-hidden');
+          document.getElementById('devHint').style.display = 'block';
+          break;
+
+        case STATES.JOINING:
+          document.getElementById('stateJoining').classList.remove('state-hidden');
+          document.getElementById('devHint').style.display = 'none';
+          break;
+
+        case STATES.ACTIVE:
+          document.getElementById('stateActiveCall').classList.remove('state-hidden');
+          document.getElementById('callTimer').classList.remove('state-hidden');
+          document.getElementById('videoArea').classList.add('active-call');
+          document.getElementById('selfView').classList.add('active-call');
+          document.getElementById('devHint').style.display = 'none';
+          // Update header title
+          document.querySelector('.header-title').textContent = 'Video Consultation';
+          break;
+      }
+    }
+
+    function startPrecheck() {
+      setState(STATES.PRECHECK);
+
+      // After precheck, go to waiting
+      setTimeout(() => {
+        startWaiting();
+      }, PRECHECK_DURATION);
+    }
+
+    function startWaiting() {
+      setState(STATES.WAITING);
+
+      // Simulate queue updates
+      setTimeout(() => {
+        const waitEl = document.getElementById('estimatedWait');
+        if (waitEl) waitEl.textContent = '1-2 min';
+      }, 15000);
+
+      setTimeout(() => {
+        const waitEl = document.getElementById('estimatedWait');
+        if (waitEl) waitEl.textContent = 'Less than 1 min';
+        const subEl = document.getElementById('waitingSubstatus');
+        if (subEl) subEl.textContent = 'Your doctor is almost ready...';
+      }, 30000);
+
+      // Schedule doctor join (can be interrupted by manual trigger)
+      doctorJoinTimeout = setTimeout(() => {
+        triggerDoctorJoin();
+      }, DOCTOR_JOIN_DELAY);
+    }
+
+    function triggerDoctorJoin() {
+      // Clear the timeout if it exists
+      if (doctorJoinTimeout) {
+        clearTimeout(doctorJoinTimeout);
+        doctorJoinTimeout = null;
+      }
+
+      // Show joining transition
+      setState(STATES.JOINING);
+
+      // After transition, start active call
+      setTimeout(() => {
+        startActiveCall();
+      }, JOINING_TRANSITION);
+    }
+
+    function startActiveCall() {
+      setState(STATES.ACTIVE);
+
+      // Start call timer
+      callStartTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (!callStartTime) return;
+
+      const elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+
+      document.getElementById('timerDisplay').textContent =
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function endCall() {
+      // Stop timer
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+
+      // Calculate duration
+      let duration = 0;
+      if (callStartTime) {
+        duration = Math.floor((Date.now() - callStartTime) / 1000);
+      }
+
+      // Store call info for summary page
+      const callInfo = {
+        duration: duration,
+        practitionerName: practitioner.name,
+        practitionerInitials: practitioner.initials,
+        practitionerColor: practitioner.color,
+        appointmentId: appointment ? appointment.id : null
+      };
+      sessionStorage.setItem('yourgp_last_call', JSON.stringify(callInfo));
+
+      // Navigate to payment page
+      window.location.href = 'video-payment.html';
+    }
+
+    function setupControls() {
+      // Mic toggle
+      document.getElementById('micBtn').addEventListener('click', function() {
+        micMuted = !micMuted;
+        this.classList.toggle('active', micMuted);
+        this.title = micMuted ? 'Unmute microphone' : 'Mute microphone';
+      });
+
+      // Video toggle
+      document.getElementById('videoBtn').addEventListener('click', function() {
+        videoOff = !videoOff;
+        this.classList.toggle('active', videoOff);
+        this.title = videoOff ? 'Turn on camera' : 'Turn off camera';
+      });
+
+      // End call
+      document.getElementById('endBtn').addEventListener('click', function() {
+        endCall();
+      });
+    }
+  </script>
+</body>
+</html>

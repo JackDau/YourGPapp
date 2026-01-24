@@ -78,6 +78,16 @@
 
         <!-- Actions for upcoming appointments -->
         <div id="upcomingActions" style="display: none;">
+          <a href="#" id="joinVideoBtn" class="btn btn-block mb-3" style="display: none; background-color: #0d9488; color: white;">
+            <span style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7"/>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              </svg>
+              Join Video Call
+            </span>
+          </a>
+
           <a href="#" id="addToCalendarBtn" class="btn btn-secondary btn-block mb-3">
             Add to Calendar
           </a>
@@ -261,7 +271,66 @@
       if (appointment.mode === 'telehealth') {
         document.getElementById('locationIcon').textContent = '💻';
         document.getElementById('locationName').textContent = 'Video Consultation';
-        document.getElementById('locationAddress').innerHTML = 'A video link will be sent to your<br>email before the appointment.';
+        document.getElementById('locationAddress').innerHTML = 'Join your video consultation using<br>the button below when it\'s time.';
+
+        // Show join video button
+        const joinVideoBtn = document.getElementById('joinVideoBtn');
+        joinVideoBtn.style.display = 'block';
+        joinVideoBtn.href = `video-checkin.html?id=${appointmentId}`;
+
+        // Check if within join window (10 minutes before to appointment end)
+        const now = new Date();
+        const appointmentStart = new Date(appointment.dateTime);
+        const appointmentEnd = new Date(appointmentStart);
+        appointmentEnd.setMinutes(appointmentEnd.getMinutes() + appointment.duration);
+
+        const earlyJoinWindow = 10 * 60 * 1000; // 10 minutes in ms
+        const joinWindowStart = new Date(appointmentStart.getTime() - earlyJoinWindow);
+
+        const minutesUntilJoin = Math.ceil((joinWindowStart - now) / (1000 * 60));
+        const isPastEnd = now > appointmentEnd;
+
+        if (isPastEnd) {
+          // Appointment has ended
+          joinVideoBtn.style.display = 'none';
+        } else if (now < joinWindowStart) {
+          // Too early to join
+          joinVideoBtn.classList.add('btn-disabled');
+          joinVideoBtn.style.backgroundColor = '#9ca3af';
+          joinVideoBtn.style.cursor = 'not-allowed';
+          joinVideoBtn.innerHTML = `
+            <span style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Join available in ${minutesUntilJoin} min
+            </span>
+          `;
+          joinVideoBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+          });
+
+          // Update countdown every minute
+          setInterval(function() {
+            const now = new Date();
+            const minsLeft = Math.ceil((joinWindowStart - now) / (1000 * 60));
+            if (minsLeft <= 0) {
+              window.location.reload();
+            } else {
+              joinVideoBtn.innerHTML = `
+                <span style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Join available in ${minsLeft} min
+                </span>
+              `;
+            }
+          }, 60000);
+        }
+        // else: within join window, button works normally
       }
 
       // Reason for visit
