@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Call Ended - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .call-ended-container {
+      padding: var(--space-4);
+      min-height: calc(100vh - 180px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .success-header {
+      text-align: center;
+      padding: var(--space-6) 0;
+    }
+
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--color-success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-4);
+      animation: pop-in 0.4s ease-out;
+    }
+
+    @keyframes pop-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .success-icon svg {
+      width: 40px;
+      height: 40px;
+      stroke: white;
+      stroke-width: 3;
+    }
+
+    .success-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-2);
+    }
+
+    .success-subtitle {
+      color: var(--color-gray-500);
+      font-size: var(--font-size-sm);
+    }
+
+    .call-summary {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      color: var(--color-gray-500);
+      font-size: var(--font-size-sm);
+    }
+
+    .summary-value {
+      font-weight: var(--font-weight-semibold);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .doctor-avatar-small {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: white;
+    }
+
+    .next-steps {
+      margin-bottom: var(--space-5);
+    }
+
+    .next-steps-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-4);
+    }
+
+    .next-step-item {
+      display: flex;
+      gap: var(--space-3);
+      padding: var(--space-3) 0;
+    }
+
+    .next-step-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--color-gray-100);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .next-step-content {
+      flex: 1;
+    }
+
+    .next-step-title {
+      font-weight: var(--font-weight-medium);
+      margin-bottom: var(--space-1);
+    }
+
+    .next-step-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+      line-height: 1.5;
+    }
+
+    .actions {
+      margin-top: auto;
+      padding-top: var(--space-4);
+    }
+
+    .btn-book-followup {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      width: 100%;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-primary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin-bottom: var(--space-3);
+      text-decoration: none;
+    }
+
+    .btn-book-followup:hover {
+      background: var(--color-gray-50);
+      border-color: var(--color-primary);
+    }
+
+    .btn-book-followup svg {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="header-title">Consultation Complete</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="call-ended-container">
+        <!-- Success Header -->
+        <div class="success-header">
+          <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <h1 class="success-title">Call Ended</h1>
+          <p class="success-subtitle">Your video consultation has finished</p>
+        </div>
+
+        <!-- Call Summary -->
+        <div class="call-summary">
+          <div class="summary-row">
+            <span class="summary-label">Duration</span>
+            <span class="summary-value" id="callDuration">--:--</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">With</span>
+            <span class="summary-value">
+              <span class="doctor-avatar-small" id="doctorAvatar">DR</span>
+              <span id="doctorName">Dr. Smith</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="next-steps">
+          <h2 class="next-steps-title">What's next</h2>
+
+          <div class="next-step-item">
+            <div class="next-step-icon">📋</div>
+            <div class="next-step-content">
+              <div class="next-step-title">Consultation notes</div>
+              <div class="next-step-desc">Your doctor's notes will be available in your health records within 24 hours.</div>
+            </div>
+          </div>
+
+          <div class="next-step-item">
+            <div class="next-step-icon">💊</div>
+            <div class="next-step-content">
+              <div class="next-step-title">Prescriptions</div>
+              <div class="next-step-desc">If your doctor issued any prescriptions, they'll be sent to your preferred pharmacy or available for download.</div>
+            </div>
+          </div>
+
+          <div class="next-step-item">
+            <div class="next-step-icon">🔬</div>
+            <div class="next-step-content">
+              <div class="next-step-title">Referrals & tests</div>
+              <div class="next-step-desc">Any referral letters or pathology requests will appear in your referrals section.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <a href="appointments-book-step1.html" class="btn-book-followup">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+              <line x1="12" y1="14" x2="12" y2="18"/>
+              <line x1="10" y1="16" x2="14" y2="16"/>
+            </svg>
+            Book a follow-up appointment
+          </a>
+          <a href="appointments.html" class="btn btn-primary btn-block btn-lg">
+            Return to Appointments
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Home</span>
+      </a>
+      <a href="appointments.html" class="nav-item active">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Appointments</span>
+      </a>
+      <a href="requests.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Requests</span>
+      </a>
+      <a href="more.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="19" cy="12" r="1"/>
+            <circle cx="5" cy="12" r="1"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">More</span>
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get call info from session storage
+      const callInfoStr = sessionStorage.getItem('yourgp_last_call');
+
+      if (callInfoStr) {
+        const callInfo = JSON.parse(callInfoStr);
+
+        // Format duration
+        const minutes = Math.floor(callInfo.duration / 60);
+        const seconds = callInfo.duration % 60;
+
+        let durationText;
+        if (minutes === 0) {
+          durationText = `${seconds} seconds`;
+        } else if (seconds === 0) {
+          durationText = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+        } else {
+          durationText = `${minutes} min ${seconds} sec`;
+        }
+
+        document.getElementById('callDuration').textContent = durationText;
+
+        // Update doctor info
+        if (callInfo.practitionerName) {
+          document.getElementById('doctorName').textContent = callInfo.practitionerName;
+        }
+        if (callInfo.practitionerInitials) {
+          document.getElementById('doctorAvatar').textContent = callInfo.practitionerInitials;
+        }
+        if (callInfo.practitionerColor) {
+          document.getElementById('doctorAvatar').style.backgroundColor = callInfo.practitionerColor;
+        }
+
+        // Clear the session storage
+        sessionStorage.removeItem('yourgp_last_call');
+      } else {
+        // Demo/direct access - show placeholder values
+        document.getElementById('callDuration').textContent = '12 minutes';
+        document.getElementById('doctorName').textContent = 'Dr. Emily Chen';
+        document.getElementById('doctorAvatar').textContent = 'EC';
+        document.getElementById('doctorAvatar').style.backgroundColor = '#0d9488';
+      }
+    });
+  </script>
+</body>
+</html>

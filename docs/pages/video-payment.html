@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment - Your GP</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <style>
+    .payment-container {
+      padding: var(--space-4);
+      min-height: calc(100vh - 180px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .payment-header {
+      text-align: center;
+      padding: var(--space-4) 0 var(--space-5);
+    }
+
+    .payment-icon {
+      width: 72px;
+      height: 72px;
+      background: var(--color-success-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-4);
+      animation: pop-in 0.4s ease-out;
+    }
+
+    @keyframes pop-in {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .payment-icon svg {
+      width: 36px;
+      height: 36px;
+      stroke: var(--color-success);
+      stroke-width: 3;
+    }
+
+    .payment-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-2);
+    }
+
+    .payment-subtitle {
+      color: var(--color-gray-500);
+      font-size: var(--font-size-sm);
+    }
+
+    .invoice-card {
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      margin-bottom: var(--space-5);
+    }
+
+    .invoice-header {
+      background: var(--color-gray-50);
+      padding: var(--space-4);
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .invoice-label {
+      font-size: var(--font-size-xs);
+      color: var(--color-gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-1);
+    }
+
+    .invoice-doctor {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .doctor-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: white;
+    }
+
+    .doctor-info {
+      flex: 1;
+    }
+
+    .doctor-name {
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .doctor-specialty {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .invoice-body {
+      padding: var(--space-4);
+    }
+
+    .invoice-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-2) 0;
+    }
+
+    .invoice-row.total {
+      border-top: 2px solid var(--color-gray-200);
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+    }
+
+    .invoice-item {
+      color: var(--color-gray-600);
+    }
+
+    .invoice-item-detail {
+      font-size: var(--font-size-xs);
+      color: var(--color-gray-400);
+    }
+
+    .invoice-amount {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .invoice-amount.discount {
+      color: var(--color-success);
+    }
+
+    .invoice-row.total .invoice-item {
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-black);
+    }
+
+    .invoice-row.total .invoice-amount {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+    }
+
+    .medicare-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      background: var(--color-success-light);
+      color: var(--color-success);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      margin-top: var(--space-3);
+    }
+
+    .medicare-badge svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .payment-methods {
+      margin-bottom: var(--space-5);
+    }
+
+    .payment-methods-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--color-gray-600);
+      margin-bottom: var(--space-3);
+    }
+
+    .payment-method {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      background: var(--color-white);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      margin-bottom: var(--space-3);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .payment-method:hover {
+      border-color: var(--color-gray-300);
+    }
+
+    .payment-method.selected {
+      border-color: var(--color-primary);
+      background: var(--color-gray-50);
+    }
+
+    .payment-method-radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--color-gray-300);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+    }
+
+    .payment-method.selected .payment-method-radio {
+      border-color: var(--color-primary);
+    }
+
+    .payment-method.selected .payment-method-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--color-primary);
+      border-radius: 50%;
+    }
+
+    .payment-method-icon {
+      width: 44px;
+      height: 30px;
+      background: var(--color-gray-100);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-gray-600);
+    }
+
+    .payment-method-icon.visa {
+      background: #1a1f71;
+      color: white;
+    }
+
+    .payment-method-icon.mastercard {
+      background: #eb001b;
+      color: white;
+    }
+
+    .payment-method-icon.apple {
+      background: var(--color-black);
+      color: white;
+    }
+
+    .payment-method-details {
+      flex: 1;
+    }
+
+    .payment-method-name {
+      font-weight: var(--font-weight-medium);
+    }
+
+    .payment-method-desc {
+      font-size: var(--font-size-sm);
+      color: var(--color-gray-500);
+    }
+
+    .actions {
+      margin-top: auto;
+      padding-top: var(--space-4);
+    }
+
+    .btn-pay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      width: 100%;
+      padding: var(--space-4);
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+      color: white;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-pay:hover {
+      background: var(--color-primary-hover);
+    }
+
+    .btn-pay:disabled {
+      background: var(--color-gray-300);
+      cursor: not-allowed;
+    }
+
+    .btn-pay svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .secure-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      font-size: var(--font-size-xs);
+      color: var(--color-gray-500);
+    }
+
+    .secure-note svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Processing overlay */
+    .processing-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all var(--transition-normal);
+    }
+
+    .processing-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .processing-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--color-gray-200);
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: var(--space-4);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .processing-text {
+      font-weight: var(--font-weight-medium);
+      color: var(--color-gray-600);
+    }
+
+    /* Success state */
+    .processing-overlay.success .processing-spinner {
+      display: none;
+    }
+
+    .processing-overlay .success-icon {
+      display: none;
+      width: 64px;
+      height: 64px;
+      background: var(--color-success);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+      animation: pop-in 0.3s ease-out;
+    }
+
+    .processing-overlay.success .success-icon {
+      display: flex;
+    }
+
+    .processing-overlay .success-icon svg {
+      width: 32px;
+      height: 32px;
+      stroke: white;
+      stroke-width: 3;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="header-title">Payment</h1>
+      </div>
+      <div class="header-right"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <div class="payment-container">
+        <!-- Header -->
+        <div class="payment-header">
+          <div class="payment-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <h1 class="payment-title">Consultation Complete</h1>
+          <p class="payment-subtitle">Please complete payment for your visit</p>
+        </div>
+
+        <!-- Invoice Card -->
+        <div class="invoice-card">
+          <div class="invoice-header">
+            <div class="invoice-label">Consultation with</div>
+            <div class="invoice-doctor">
+              <div class="doctor-avatar" id="doctorAvatar" style="background-color: #0d9488;">EC</div>
+              <div class="doctor-info">
+                <div class="doctor-name" id="doctorName">Dr. Emily Chen</div>
+                <div class="doctor-specialty">General Practitioner</div>
+              </div>
+            </div>
+          </div>
+          <div class="invoice-body">
+            <div class="invoice-row">
+              <div>
+                <div class="invoice-item" id="consultationType">Telehealth Consultation</div>
+                <div class="invoice-item-detail" id="consultationDuration">15 minutes</div>
+              </div>
+              <div class="invoice-amount">$85.00</div>
+            </div>
+            <div class="invoice-row">
+              <div class="invoice-item">Medicare Rebate</div>
+              <div class="invoice-amount discount">-$41.40</div>
+            </div>
+            <div class="invoice-row total">
+              <div class="invoice-item">Gap Payment</div>
+              <div class="invoice-amount" id="totalAmount">$43.60</div>
+            </div>
+            <div class="medicare-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              Medicare rebate applied automatically
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="payment-methods">
+          <div class="payment-methods-title">Select payment method</div>
+
+          <div class="payment-method selected" onclick="selectMethod(this)">
+            <div class="payment-method-radio"></div>
+            <div class="payment-method-icon visa">VISA</div>
+            <div class="payment-method-details">
+              <div class="payment-method-name">Visa ending in 4242</div>
+              <div class="payment-method-desc">Saved card</div>
+            </div>
+          </div>
+
+          <div class="payment-method" onclick="selectMethod(this)">
+            <div class="payment-method-radio"></div>
+            <div class="payment-method-icon mastercard">MC</div>
+            <div class="payment-method-details">
+              <div class="payment-method-name">Mastercard ending in 8888</div>
+              <div class="payment-method-desc">Saved card</div>
+            </div>
+          </div>
+
+          <div class="payment-method" onclick="selectMethod(this)">
+            <div class="payment-method-radio"></div>
+            <div class="payment-method-icon apple">Pay</div>
+            <div class="payment-method-details">
+              <div class="payment-method-name">Apple Pay</div>
+              <div class="payment-method-desc">Pay with Face ID</div>
+            </div>
+          </div>
+
+          <div class="payment-method" onclick="selectMethod(this)">
+            <div class="payment-method-radio"></div>
+            <div class="payment-method-icon">+</div>
+            <div class="payment-method-details">
+              <div class="payment-method-name">Add new card</div>
+              <div class="payment-method-desc">Credit or debit card</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+          <button type="button" class="btn-pay" id="payBtn" onclick="processPayment()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            Pay $43.60
+          </button>
+          <div class="secure-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            Secure payment powered by Stripe
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <a href="dashboard.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Home</span>
+      </a>
+      <a href="appointments.html" class="nav-item active">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Appointments</span>
+      </a>
+      <a href="requests.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">Requests</span>
+      </a>
+      <a href="more.html" class="nav-item">
+        <span class="nav-item-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"/>
+            <circle cx="19" cy="12" r="1"/>
+            <circle cx="5" cy="12" r="1"/>
+          </svg>
+        </span>
+        <span class="nav-item-label">More</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Processing Overlay -->
+  <div class="processing-overlay" id="processingOverlay">
+    <div class="processing-spinner"></div>
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <div class="processing-text" id="processingText">Processing payment...</div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get call info from session storage
+      const callInfoStr = sessionStorage.getItem('yourgp_last_call');
+
+      if (callInfoStr) {
+        const callInfo = JSON.parse(callInfoStr);
+
+        // Update doctor info
+        if (callInfo.practitionerName) {
+          document.getElementById('doctorName').textContent = callInfo.practitionerName;
+        }
+        if (callInfo.practitionerInitials) {
+          document.getElementById('doctorAvatar').textContent = callInfo.practitionerInitials;
+        }
+        if (callInfo.practitionerColor) {
+          document.getElementById('doctorAvatar').style.backgroundColor = callInfo.practitionerColor;
+        }
+
+        // Update duration
+        if (callInfo.duration) {
+          const minutes = Math.max(1, Math.ceil(callInfo.duration / 60));
+          document.getElementById('consultationDuration').textContent = `${minutes} minutes`;
+        }
+      }
+    });
+
+    function selectMethod(element) {
+      // Remove selected from all
+      document.querySelectorAll('.payment-method').forEach(el => {
+        el.classList.remove('selected');
+      });
+      // Add selected to clicked
+      element.classList.add('selected');
+    }
+
+    function processPayment() {
+      const overlay = document.getElementById('processingOverlay');
+      const text = document.getElementById('processingText');
+      const btn = document.getElementById('payBtn');
+
+      btn.disabled = true;
+      overlay.classList.add('show');
+
+      // Simulate payment processing
+      setTimeout(() => {
+        text.textContent = 'Verifying card...';
+      }, 1000);
+
+      setTimeout(() => {
+        text.textContent = 'Processing...';
+      }, 2000);
+
+      setTimeout(() => {
+        overlay.classList.add('success');
+        text.textContent = 'Payment successful!';
+      }, 3000);
+
+      setTimeout(() => {
+        // Store payment info for feedback page
+        const callInfo = sessionStorage.getItem('yourgp_last_call');
+        if (callInfo) {
+          const info = JSON.parse(callInfo);
+          info.paymentAmount = '$43.60';
+          info.paymentComplete = true;
+          sessionStorage.setItem('yourgp_last_call', JSON.stringify(info));
+        }
+
+        // Navigate to feedback
+        window.location.href = 'video-feedback.html';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
